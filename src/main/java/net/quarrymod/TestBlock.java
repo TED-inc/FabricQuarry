@@ -1,6 +1,6 @@
 package net.quarrymod;
 
-import net.quarrymod.blocksentity.QuarryBlockEntity;
+import net.quarrymod.blockentity.QuarryBlockEntity;
 import net.quarrymod.utils.VoxelShapeHelper;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
