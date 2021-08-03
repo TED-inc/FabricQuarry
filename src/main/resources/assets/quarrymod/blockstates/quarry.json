@@ -1,0 +1,12 @@
+{
+    "variants": {
+        "facing=north,active=false": { "model": "quarrymod:block/machines/tier2_machines/quarry" },
+        "facing=south,active=false": { "model": "quarrymod:block/machines/tier2_machines/quarry", "y": 180 },
+        "facing=west,active=false":  { "model": "quarrymod:block/machines/tier2_machines/quarry", "y": 270 },
+        "facing=east,active=false":  { "model": "quarrymod:block/machines/tier2_machines/quarry", "y": 90 },
+        "facing=north,active=true": { "model": "quarrymod:block/machines/tier2_machines/quarry_on" },
+        "facing=south,active=true": { "model": "quarrymod:block/machines/tier2_machines/quarry_on", "y": 180 },
+        "facing=west,active=true":  { "model": "quarrymod:block/machines/tier2_machines/quarry_on", "y": 270 },
+        "facing=east,active=true":  { "model": "quarrymod:block/machines/tier2_machines/quarry_on", "y": 90 }
+    }
+}

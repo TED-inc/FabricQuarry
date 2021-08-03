@@ -1,6 +1,6 @@
 package net.quarrymod.client.gui;
 
-import net.quarrymod.blockentity.QuarryBlockEntity;
+import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
 
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;

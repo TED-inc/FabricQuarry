@@ -6,7 +6,7 @@
         "entries": [
           {
             "type": "minecraft:item",
-            "name": "quarrymod:test_block"
+            "name": "quarrymod:quarry"
           }
         ],
         "conditions": [
