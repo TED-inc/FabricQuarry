@@ -9,8 +9,9 @@
     "TEDinc"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/quarry-mod",
+    "sources": "https://github.com/TED-inc/FabricQuarry",
+    "issues": "https://github.com/TED-inc/FabricQuarry/issues"
   },
 
   "license": "CC0-1.0",

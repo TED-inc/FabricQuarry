@@ -21,22 +21,26 @@ public class GuiQuarry extends GuiBase<BuiltScreenHandler> {
 	@Override
 	protected void drawBackground(MatrixStack matrixStack, final float f, final int mouseX, final int mouseY) {
 		super.drawBackground(matrixStack, f, mouseX, mouseY);
-		final GuiBase.Layer layer = GuiBase.Layer.BACKGROUND;
+		final Layer layer = Layer.BACKGROUND;
 
 		drawSlot(matrixStack, 8, 72, layer);
 
-		drawSlot(matrixStack, 55, 45, layer);
-		drawOutputSlot(matrixStack, 101, 45, layer);
+		// drawSlot(matrixStack, 30, 20, layer);
+		// drawSlot(matrixStack, 50, 20, layer);
+		// drawSlot(matrixStack, 70, 20, layer);
+		// drawSlot(matrixStack, 90, 20, layer);
+		// drawSlot(matrixStack, 110, 20, layer);
+		// drawSlot(matrixStack, 130, 20, layer);
+		drawOutputSlotBar(matrixStack, 39, 65, 5, layer);
 
-		builder.drawJEIButton(matrixStack, this, 158, 5, layer);
 	}
 
 	@Override
 	protected void drawForeground(MatrixStack matrixStack, final int mouseX, final int mouseY) {
 		super.drawForeground(matrixStack, mouseX, mouseY);
-		final GuiBase.Layer layer = GuiBase.Layer.FOREGROUND;
+		final Layer layer = Layer.FOREGROUND;
 
-		builder.drawProgressBar(matrixStack, this, blockEntity.getProgressScaled(100), 100, 76, 48, mouseX, mouseY, GuiBuilder.ProgressDirection.UP, layer);
+		builder.drawProgressBar(matrixStack, this, blockEntity.getProgressScaled(100), 100, 83, 41, mouseX, mouseY, GuiBuilder.ProgressDirection.DOWN, layer);
 		builder.drawMultiEnergyBar(matrixStack, this, 9, 19, (int) blockEntity.getEnergy(), (int) blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);
 	}
 }
