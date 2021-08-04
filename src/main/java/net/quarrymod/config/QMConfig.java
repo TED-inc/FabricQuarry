@@ -17,5 +17,5 @@ public class QMConfig {
 	public static int quarryTiksPerExcavation = 60;
 
     @Config(config = "machines", category = "quarry", key = "QuarrySqrWorkRadius", comment = "Quarry Sqr Work Radius, square radius of work, in blocks")
-	public static int quarrySqrWorkRadius = 3;
+	public static int quarrySqrWorkRadius = 8;
 }
