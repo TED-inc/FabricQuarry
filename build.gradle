@@ -30,9 +30,8 @@ dependencies {
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.
 
-	modImplementation 'RebornCore:RebornCore-1.16:+'
-
-	modImplementation 'TechReborn:TechReborn-1.16:+'
+	modApi ("TechReborn:TechReborn-${project.tr_version}") { exclude group: "net.fabricmc.fabric-api" exclude group: "RebornCore"}
+    modApi ("RebornCore:RebornCore-${project.rc_version}") { exclude group: "net.fabricmc.fabric-api"}
 }
 
 processResources {
