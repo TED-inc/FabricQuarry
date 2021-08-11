@@ -1,5 +1,7 @@
 package net.quarrymod.blockentity.machine.tier3;
 
+import net.quarrymod.block.misc.BlockDrillTube;
+import net.quarrymod.blockentity.utils.SlotGroup;
 import net.quarrymod.config.QMConfig;
 import net.quarrymod.init.QMBlockEntities;
 import net.quarrymod.init.QMContent;
@@ -8,9 +10,12 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Material;
 import net.minecraft.block.OreBlock;
 import net.minecraft.block.RedstoneOreBlock;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -31,55 +36,12 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 
 	public RebornInventory<QuarryBlockEntity> inventory = new RebornInventory<>(12, "QuarryBlockEntity", 64, this);
 	private int digSpentedEnergy = 0;
+	private SlotGroup<QuarryBlockEntity> holeFillerSlotGroup = new SlotGroup<>(inventory, new int[] { 0, 1, 2, 3 });
+	private SlotGroup<QuarryBlockEntity> drillTubeSlotGroup = new SlotGroup<>(inventory, new int[] { 4, 5 });
+	private SlotGroup<QuarryBlockEntity> outputSlotGroup = new SlotGroup<>(inventory, new int[] { 6, 7, 8, 9, 10 });
 
 	public QuarryBlockEntity() {
 		super(QMBlockEntities.QUARRY);
-	}
-
-
-	private boolean spaceForOutput(int slot, ItemStack stack) {
-		return inventory.getStack(slot).isEmpty()
-				|| ItemUtils.isItemEqual(inventory.getStack(slot), stack, true, true)
-				&& inventory.getStack(slot).getCount() + stack.getCount() <= stack.getMaxCount();
-	}
-
-	private boolean spaceForOutput(List<ItemStack> outputs) {
-		for (ItemStack drop : outputs) {
-			boolean canAdd = false;
-
-			for (int i = 6; i < 11; i++) {
-				if (spaceForOutput(i, drop)) {
-					canAdd = true;
-					break;
-				}
-			}
-			
-			if (!canAdd)
-				return false;
-		}
-
-		return true;
-	}
-
-
-	private void addOutputProducts(int slot, ItemStack stack) {
-		if (inventory.getStack(slot).isEmpty()) {
-			inventory.setStack(slot, stack);
-		} else if (ItemUtils.isItemEqual(this.inventory.getStack(slot), stack, true, true)) {
-			inventory.getStack(slot).setCount((Math.min(stack.getMaxCount(), stack.getCount() + inventory.getStack(slot).getCount())));
-		}
-	}
-
-	private void addOutputProducts(List<ItemStack> drops){
-		for (ItemStack drop : drops) {
-			for (int i = 6; i < 11; i++) {
-				if (spaceForOutput(i, drop)) {
-					addOutputProducts(i, drop);
-					break;
-				}
-			}
-		}
-		inventory.setChanged();
 	}
 
 	
@@ -166,8 +128,8 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 					if (isOre(blockState)) {
 						List<ItemStack> drop = Block.getDroppedStacks(blockState, (ServerWorld)world, pos, null);
 
-						if (spaceForOutput(drop)) {
-							addOutputProducts(drop);
+						if (outputSlotGroup.hasSpace(drop)) {
+							outputSlotGroup.addStacks(drop);
 							world.removeBlock(blockPos, false);
 							return true;
 						}
@@ -222,9 +184,37 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	@Override
 	public BuiltScreenHandler createScreenHandler(int syncID, PlayerEntity player) {
 		return new ScreenHandlerBuilder("quarry").player(player.inventory).inventory().hotbar().addInventory()
-				.blockEntity(this).slot(0, 30, 20).slot(1, 50, 20).slot(2, 70, 20).slot(3, 90, 20).slot(4, 110, 20)
-				.slot(5, 130, 20).outputSlot(6, 40, 66).outputSlot(7, 60, 66).outputSlot(8, 80, 66)
-				.outputSlot(9, 100, 66).outputSlot(10, 120, 66).energySlot(11, 8, 72).syncEnergyValue()
+				.blockEntity(this)
+				.filterSlot(0, 30, 20, QuarryBlockEntity::holeFillerFilter)
+				.filterSlot(1, 50, 20, QuarryBlockEntity::holeFillerFilter)
+				.filterSlot(2, 70, 20, QuarryBlockEntity::holeFillerFilter)
+				.filterSlot(3, 90, 20, QuarryBlockEntity::holeFillerFilter)
+				.filterSlot(4, 120, 20, QuarryBlockEntity::drillTubeFilter)
+				.filterSlot(5, 140, 20, QuarryBlockEntity::drillTubeFilter)
+				.outputSlot(6, 55, 66)
+				.outputSlot(7, 75, 66)
+				.outputSlot(8, 95, 66)
+				.outputSlot(9, 115, 66)
+				.outputSlot(10, 135, 66)
+				.energySlot(11, 8, 72).syncEnergyValue()
 				.sync(this::getProgress, this::setProgress).addInventory().create(this, syncID);
+	}
+
+	private static boolean holeFillerFilter(ItemStack stack) {
+		Item item = stack.getItem();
+		if ((item instanceof BlockItem)) {
+			BlockItem blockItem = (BlockItem)item;
+			return blockItem.getBlock().getDefaultState().getMaterial().equals(Material.STONE);
+		}
+		return false;
+	}
+
+	private static boolean drillTubeFilter(ItemStack stack) {
+		Item item = stack.getItem();
+		if ((item instanceof BlockItem)) {
+			BlockItem blockItem = (BlockItem)item;
+			return blockItem.getBlock() instanceof BlockDrillTube;
+		}
+		return false;
 	}
 }
