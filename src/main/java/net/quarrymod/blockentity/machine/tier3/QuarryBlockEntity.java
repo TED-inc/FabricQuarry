@@ -14,12 +14,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-
+import net.minecraft.world.World;
 import reborncore.api.IToolDrop;
 import reborncore.api.blockentity.InventoryProvider;
 import reborncore.client.screen.BuiltScreenHandlerProvider;
 import reborncore.client.screen.builder.BuiltScreenHandler;
 import reborncore.client.screen.builder.ScreenHandlerBuilder;
+import reborncore.common.blockentity.MachineBaseBlockEntity;
 import reborncore.common.blocks.BlockMachineBase;
 import reborncore.common.powerSystem.PowerAcceptorBlockEntity;
 import reborncore.common.util.ItemUtils;
@@ -32,8 +33,8 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	public RebornInventory<QuarryBlockEntity> inventory = new RebornInventory<>(12, "QuarryBlockEntity", 64, this);
 	private int digSpentedEnergy = 0;
 
-	public QuarryBlockEntity() {
-		super(QMBlockEntities.QUARRY);
+	public QuarryBlockEntity(BlockPos pos, BlockState state) {
+		super(QMBlockEntities.QUARRY, pos, state);
 	}
 
 
@@ -79,7 +80,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 				}
 			}
 		}
-		inventory.setChanged();
+		inventory.setHashChanged();
 	}
 
 	
@@ -124,8 +125,8 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 
 	// TilePowerAcceptor
 	@Override
-	public void tick() {
-		super.tick();
+	public void tick(World world, BlockPos pos, BlockState state, MachineBaseBlockEntity blockEntity2) {
+		super.tick(world, pos, state, blockEntity2);
 
 		if (world.isClient)
 			return;
@@ -221,7 +222,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	// IContainerProvider
 	@Override
 	public BuiltScreenHandler createScreenHandler(int syncID, PlayerEntity player) {
-		return new ScreenHandlerBuilder("quarry").player(player.inventory).inventory().hotbar().addInventory()
+		return new ScreenHandlerBuilder("quarry").player(player.getInventory()).inventory().hotbar().addInventory()
 				.blockEntity(this).slot(0, 30, 20).slot(1, 50, 20).slot(2, 70, 20).slot(3, 90, 20).slot(4, 110, 20)
 				.slot(5, 130, 20).outputSlot(6, 40, 66).outputSlot(7, 60, 66).outputSlot(8, 80, 66)
 				.outputSlot(9, 100, 66).outputSlot(10, 120, 66).energySlot(11, 8, 72).syncEnergyValue()
