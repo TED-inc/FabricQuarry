@@ -23,7 +23,7 @@
       "net.quarrymod.QuarryMod"
     ],
     "client": [
-        "net.quarrymod.QuarryModClient"
+      "net.quarrymod.QuarryModClient"
     ],
     "server": []
   },

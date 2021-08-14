@@ -14,6 +14,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 
 import reborncore.api.IToolDrop;
 import reborncore.api.blockentity.InventoryProvider;
@@ -31,6 +32,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 
 	public RebornInventory<QuarryBlockEntity> inventory = new RebornInventory<>(12, "QuarryBlockEntity", 64, this);
 	private int digSpentedEnergy = 0;
+	private boolean exacavationComplete = false;
 
 	public QuarryBlockEntity() {
 		super(QMBlockEntities.QUARRY);
@@ -143,7 +145,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 			}
 		}
 
-		if (digSpentedEnergy >= QMConfig.quarryEnergyPerExcavation) {
+		if (!exacavationComplete && digSpentedEnergy >= QMConfig.quarryEnergyPerExcavation) {
 			final boolean isMineSucessful = tryMineOre();
 			if (isMineSucessful)
 				digSpentedEnergy -= QMConfig.quarryEnergyPerExcavation;
@@ -155,24 +157,44 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	}
 
 	private boolean tryMineOre() {
-		final int radius = QMConfig.quarrySqrWorkRadius;
+		final int radius = QMConfig.quarrySqrWorkRadius * 100;
+		exacavationComplete = true;
 
-		for (int y = 1; y < pos.getY(); y++)
-			for (int x = -radius; x <= radius; x++)
-				for (int z = -radius; z <= radius; z++) {
-					BlockPos blockPos = pos.add(x, 0, z).down(y);
-					BlockState blockState = world.getBlockState(blockPos);
+		final BlockPos upperBlockPos = pos.add(radius, 0, radius);
+		final BlockPos lowerBlockPos = pos.add(-radius, 0, -radius);
+		final ChunkPos upperChunkPos = world.getChunk(upperBlockPos).getPos();
+		final ChunkPos lowerChunkPos = world.getChunk(lowerBlockPos).getPos();
 
-					if (isOre(blockState)) {
-						List<ItemStack> drop = Block.getDroppedStacks(blockState, (ServerWorld)world, pos, null);
+		for (int y = pos.getY(); y >= 0 ; y--)
+			for (int chunkX = lowerChunkPos.x; chunkX <= upperChunkPos.x; chunkX++)
+				for (int chunkZ = lowerChunkPos.z; chunkZ <= upperChunkPos.z; chunkZ++)
+					if (world.isChunkLoaded(chunkX, chunkZ))
+						for (int x = 0; x < 16; x++)
+							for (int z = 0; z < 16; z++) {
+								int blockX = chunkX * 16 + x;
+								int blockZ = chunkZ * 16 + z;
 
-						if (spaceForOutput(drop)) {
-							addOutputProducts(drop);
-							world.removeBlock(blockPos, false);
-							return true;
-						}
-					}
-				}
+								if (blockX <= upperBlockPos.getX() && 
+									blockZ <= upperBlockPos.getZ() &&
+									blockX >= lowerBlockPos.getX() &&
+									blockZ >= lowerBlockPos.getZ()) 
+								{
+									BlockPos blockPos = new BlockPos(blockX, y, blockZ);
+									BlockState blockState = world.getBlockState(blockPos);
+
+									if (isOre(blockState)) {
+										List<ItemStack> drop = Block.getDroppedStacks(blockState, (ServerWorld)world, pos, null);
+										exacavationComplete = false;
+
+										if (spaceForOutput(drop)) {
+											addOutputProducts(drop);
+											world.removeBlock(blockPos, false);
+											return true;
+										}
+									}
+								}
+							}
+						
 		return false;
 	}
 
