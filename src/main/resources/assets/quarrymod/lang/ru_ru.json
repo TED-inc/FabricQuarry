@@ -1,4 +1,6 @@
 {
     "block.quarrymod.quarry": "Карьер",
-    "block.quarrymod.drill_tube": "Карьерная труба"
+    "block.quarrymod.drill_tube": "Карьерная труба",
+    "gui.quarrymod.quarry.filler_blocks": "Блоки заполнения",
+    "gui.quarrymod.quarry.drill_tubes": "Карьерные трубы"
 }

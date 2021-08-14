@@ -4,7 +4,7 @@ import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
 
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
-
+import net.minecraft.text.TranslatableText;
 import reborncore.client.gui.builder.GuiBase;
 import reborncore.client.gui.guibuilder.GuiBuilder;
 import reborncore.client.screen.builder.BuiltScreenHandler;
@@ -39,8 +39,18 @@ public class GuiQuarry extends GuiBase<BuiltScreenHandler> {
 	protected void drawForeground(MatrixStack matrixStack, final int mouseX, final int mouseY) {
 		super.drawForeground(matrixStack, mouseX, mouseY);
 		final Layer layer = Layer.FOREGROUND;
-
+		
+		if (withinBounds(this, mouseX, mouseY, 28, 18, 107, 37))
+			builder.drawText(matrixStack, this, new TranslatableText("gui.quarrymod.quarry.filler_blocks"), 30, 40, 0x20A7CC);
+		if (withinBounds(this, mouseX, mouseY, 118, 18, 157, 37))
+			builder.drawText(matrixStack, this, new TranslatableText("gui.quarrymod.quarry.drill_tubes"), 30, 40, 0x20A7CC);
 		builder.drawProgressBar(matrixStack, this, blockEntity.getProgressScaled(100), 100, 33, 62, mouseX, mouseY, GuiBuilder.ProgressDirection.UP, layer);
 		builder.drawMultiEnergyBar(matrixStack, this, 9, 19, (int) blockEntity.getEnergy(), (int) blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);
+	}
+
+	private static boolean withinBounds(GuiBase<?> guiBase, int mouseX, int mouseY, int xMin, int yMin, int xMax, int yMax) {
+		mouseX -= guiBase.getGuiLeft();
+		mouseY -= guiBase.getGuiTop();
+		return (mouseX > xMin && mouseX < xMax) && (mouseY > yMin && mouseY < yMax);
 	}
 }
