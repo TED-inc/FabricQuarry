@@ -1,5 +1,6 @@
 package net.quarrymod.init;
 
+import net.quarrymod.block.misc.BlockDrillTube;
 import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
 import net.quarrymod.client.GuiType;
 
@@ -16,6 +17,7 @@ import techreborn.utils.InitUtils;
 
 public class QMContent {
 
+	public static final Block DRILL_TUBE = new BlockDrillTube();
 
     public enum Machine implements ItemConvertible {
 		QUARRY(new GenericMachineBlock(GuiType.QUARRY, QuarryBlockEntity::new));

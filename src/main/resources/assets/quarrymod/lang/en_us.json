@@ -1,3 +1,6 @@
 {
-    "block.quarrymod.quarry": "Quarry"
+    "block.quarrymod.quarry": "Quarry",
+    "block.quarrymod.drill_tube": "Quarry Tube",
+    "gui.quarrymod.quarry.filler_blocks": "Filler Blocks",
+    "gui.quarrymod.quarry.drill_tubes": "Quarry Tubes"
 }

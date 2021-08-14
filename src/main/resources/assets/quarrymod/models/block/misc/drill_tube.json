@@ -1,0 +1,56 @@
+{
+	"textures": {
+        "cable": "quarrymod:block/misc/drill_tube",
+		"particle": "quarrymod:block/misc/drill_tube"
+    },
+	"elements": [
+		{
+			"from": [ 5, 0,	5 ],
+			"to": [ 11, 16, 11 ],
+			"faces": {
+				"north": { "texture": "#cable" },
+				"east": { "texture": "#cable" },
+				"south": { "texture": "#cable" },
+				"west": { "texture": "#cable" },
+				"up": { "texture": "#cable" },
+				"down": { "texture": "#cable" }
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [48.75, 0, 0],
+			"translation": [0, 3.25, 0.75],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [48.75, 0, 0],
+			"translation": [0, 3.25, 0.75],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"firstperson_righthand": {
+			"rotation": [0, 167.5, 0],
+			"translation": [0.75, 1.5, -2.75],
+			"scale": [0.7, 0.7, 0.7]
+		},
+		"firstperson_lefthand": {
+			"rotation": [0, 167.5, 0],
+			"translation": [0.75, 1.5, -2.75],
+			"scale": [0.7, 0.7, 0.7]
+		},
+		"ground": {
+			"translation": [0, 1, 0],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"gui": {
+			"rotation": [45, 135, 0],
+			"scale": [0.7, 0.7, 0.7]
+		},
+		"head": {
+			"translation": [0, 11.75, 0]
+		},
+		"fixed": {
+			"rotation": [0, 90, 90]
+		}
+	}
+}
