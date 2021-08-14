@@ -41,9 +41,13 @@ public class GuiQuarry extends GuiBase<BuiltScreenHandler> {
 		final Layer layer = Layer.FOREGROUND;
 		
 		if (withinBounds(this, mouseX, mouseY, 28, 18, 107, 37))
-			builder.drawText(matrixStack, this, new TranslatableText("gui.quarrymod.quarry.filler_blocks"), 30, 40, 0x20A7CC);
+			builder.drawText(matrixStack, this, new TranslatableText("gui.quarrymod.quarry.filler_blocks"), 30, 40, 0xA0A0A0);
 		if (withinBounds(this, mouseX, mouseY, 118, 18, 157, 37))
-			builder.drawText(matrixStack, this, new TranslatableText("gui.quarrymod.quarry.drill_tubes"), 30, 40, 0x20A7CC);
+			builder.drawText(matrixStack, this, new TranslatableText("gui.quarrymod.quarry.drill_tubes"), 30, 40, 0xA0A0A0);
+
+		builder.drawDefaultBackground(matrixStack, this, 28, 25, 80, 6);
+		builder.drawDefaultBackground(matrixStack, this, 118, 25, 40, 6);
+		
 		builder.drawProgressBar(matrixStack, this, blockEntity.getProgressScaled(100), 100, 33, 62, mouseX, mouseY, GuiBuilder.ProgressDirection.UP, layer);
 		builder.drawMultiEnergyBar(matrixStack, this, 9, 19, (int) blockEntity.getEnergy(), (int) blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);
 	}
