@@ -157,7 +157,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	}
 
 	private boolean tryMineOre() {
-		final int radius = QMConfig.quarrySqrWorkRadius * 100;
+		final int radius = QMConfig.quarrySqrWorkRadius;
 		exacavationComplete = true;
 
 		final BlockPos upperBlockPos = pos.add(radius, 0, radius);
