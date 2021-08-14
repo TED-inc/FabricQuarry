@@ -35,7 +35,7 @@ import techreborn.init.TRContent;
 public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements IToolDrop, InventoryProvider, BuiltScreenHandlerProvider {
 
 	public RebornInventory<QuarryBlockEntity> inventory = new RebornInventory<>(12, "QuarryBlockEntity", 64, this);
-	private int digSpentedEnergy = 0;
+	private double miningSpentedEnergy = 0;
 	private boolean exacavationComplete = false;
 
 	private SlotGroup<QuarryBlockEntity> holeFillerSlotGroup = new SlotGroup<>(inventory, new int[] { 0, 1, 2, 3 });
@@ -73,17 +73,17 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		return 0;
 	}
 
-	public int getProgress() {
-		return digSpentedEnergy;
+	public double getProgress() {
+		return miningSpentedEnergy;
 	}
 
-	public void setProgress(int progress) {
-		digSpentedEnergy = progress;
+	public void setProgress(double progress) {
+		miningSpentedEnergy = progress;
 	}
 
 	public int getProgressScaled(int scale) {
-		if (digSpentedEnergy != 0) {
-			return Math.min(digSpentedEnergy * scale / QMConfig.quarryEnergyPerExcavation, 100);
+		if (miningSpentedEnergy != 0) {
+			return (int)Math.min(miningSpentedEnergy * scale / getEnergyPerExcavation(), 100);
 		}
 		return 0;
 	}
@@ -100,19 +100,19 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 
 		boolean isActive = false;
 
-		if (digSpentedEnergy < QMConfig.quarryEnergyPerExcavation) {
-			final int euNeeded = QMConfig.quarryEnergyPerExcavation / QMConfig.quarryTiksPerExcavation;
+		if (miningSpentedEnergy < getEnergyPerExcavation()) {
+			final double euNeeded = getEnergyPerExcavation() / getTiksPerExcavation();
 			if (getStored(EnergySide.UNKNOWN) >= euNeeded) {
 				useEnergy(euNeeded);
-				digSpentedEnergy += euNeeded;
+				miningSpentedEnergy += euNeeded;
 				isActive = true;
 			}
 		}
 
-		if (!exacavationComplete && digSpentedEnergy >= QMConfig.quarryEnergyPerExcavation) {
+		if (!exacavationComplete && miningSpentedEnergy >= getEnergyPerExcavation()) {
 			final boolean isMineSucessful = tryMineOre();
 			if (isMineSucessful)
-				digSpentedEnergy -= QMConfig.quarryEnergyPerExcavation;
+				miningSpentedEnergy -= getEnergyPerExcavation();
 
 			isActive = isMineSucessful;
 		}
@@ -161,6 +161,14 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		return false;
 	}
 
+	private int getTiksPerExcavation() {
+		return Math.max((int) (QMConfig.quarryTiksPerExcavation * (1d - getSpeedMultiplier())), QMConfig.quarryMinTiksPerExcavation);
+	}
+
+	private double getEnergyPerExcavation() {
+		return QMConfig.quarryEnergyPerExcavation * getPowerMultiplier();
+	}
+
 	private boolean isOre(BlockState state) {
 		return !state.isAir() && (state.getBlock() instanceof OreBlock || state.getBlock() instanceof RedstoneOreBlock);
 	}
@@ -182,13 +190,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 
 	@Override
 	public double getBaseMaxInput() {
-		return QMConfig.quarryMaxInput;
-	}
-
-	// TileMachineBase
-	@Override
-	public boolean canBeUpgraded() {
-		return false;
+		return QMConfig.quarryMaxInput * (1d + getSpeedMultiplier() * QMConfig.quarryMaxInputOverclockerMultipier);
 	}
 
 	// IToolDrop
