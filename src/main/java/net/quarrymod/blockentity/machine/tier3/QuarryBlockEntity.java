@@ -104,9 +104,10 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 
 		if (miningSpentedEnergy < getEnergyPerExcavation()) {
 			final double euNeeded = getEnergyPerExcavation() / getTiksPerExcavation();
-			if (getStored(EnergySide.UNKNOWN) >= euNeeded) {
-				useEnergy(euNeeded);
-				miningSpentedEnergy += euNeeded;
+			final double euAvailable = Math.min(euNeeded, getStored(EnergySide.UNKNOWN));
+			if (euAvailable > 0d) {
+				useEnergy(euAvailable);
+				miningSpentedEnergy += euAvailable;
 				isActive = true;
 			}
 		}
