@@ -57,13 +57,37 @@ public final class SlotGroup<T extends MachineBaseBlockEntity> {
 
 	public void addStacks(List<ItemStack> drops){
 		for (ItemStack drop : drops) {
-			for (int i = 6; i < 11; i++) {
-				if (hasSpace(i, drop)) {
-					addStack(i, drop);
+			for (int slotId : slotList) {
+				if (hasSpace(slotId, drop)) {
+					addStack(slotId, drop);
 					break;
 				}
 			}
 		}
 		inventory.setChanged();
+	}
+
+	public boolean isEmpty() {
+		for (int slotId : slotList)
+			if (!inventory.getStack(slotId).isEmpty())
+				return false;
+
+		return true;
+	}
+
+	public boolean tryConsume(ItemStack stack) {
+		for (int slotId : slotList)
+		{
+			ItemStack slotStack = inventory.getStack(slotId);
+			if (!slotStack.isEmpty()
+			 && ItemUtils.isItemEqual(slotStack, stack, true, true)
+			 && slotStack.getCount() >= stack.getCount()) {
+				slotStack.setCount(slotStack.getCount() - stack.getCount());
+				return true;
+			}
+			// TODO: make it possible to grab from multiple slots
+		}
+
+		return false;
 	}
 }

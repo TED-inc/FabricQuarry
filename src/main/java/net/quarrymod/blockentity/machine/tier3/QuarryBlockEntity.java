@@ -36,7 +36,8 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 
 	public RebornInventory<QuarryBlockEntity> inventory = new RebornInventory<>(12, "QuarryBlockEntity", 64, this);
 	private double miningSpentedEnergy = 0;
-	private boolean exacavationComplete = false;
+	private ExcavationState excavationState = ExcavationState.InProgress;
+	private BlockPos targetOrePos;
 
 	private SlotGroup<QuarryBlockEntity> holeFillerSlotGroup = new SlotGroup<>(inventory, new int[] { 0, 1, 2, 3 });
 	private SlotGroup<QuarryBlockEntity> drillTubeSlotGroup = new SlotGroup<>(inventory, new int[] { 4, 5 });
@@ -73,14 +74,6 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		return 0;
 	}
 
-	public double getProgress() {
-		return miningSpentedEnergy;
-	}
-
-	public void setProgress(double progress) {
-		miningSpentedEnergy = progress;
-	}
-
 	public int getProgressScaled(int scale) {
 		if (miningSpentedEnergy != 0) {
 			return (int)Math.min(miningSpentedEnergy * scale / getEnergyPerExcavation(), 100);
@@ -88,7 +81,10 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		return 0;
 	}
 
-	// TilePowerAcceptor
+	public ExcavationState getExcavationState() {
+		return excavationState;
+	}
+
 	@Override
 	public void tick() {
 		super.tick();
@@ -98,39 +94,46 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 
 		this.charge(11);
 
-		boolean isActive = false;
+		if (excavationState != ExcavationState.Complete)
+		{
+			if (miningSpentedEnergy < getEnergyPerExcavation()) {
+				final double euNeeded = getEnergyPerExcavation() / getTiksPerExcavation();
+				final double euAvailable = Math.min(euNeeded, getStored(EnergySide.UNKNOWN));
+				if (euAvailable > 0d) {
+					useEnergy(euAvailable);
+					miningSpentedEnergy += euAvailable;
+					excavationState = ExcavationState.InProgress;
+				}
+				else
+					excavationState = ExcavationState.NoEnergyIncome;
+			}
 
-		if (miningSpentedEnergy < getEnergyPerExcavation()) {
-			final double euNeeded = getEnergyPerExcavation() / getTiksPerExcavation();
-			final double euAvailable = Math.min(euNeeded, getStored(EnergySide.UNKNOWN));
-			if (euAvailable > 0d) {
-				useEnergy(euAvailable);
-				miningSpentedEnergy += euAvailable;
-				isActive = true;
+			if (miningSpentedEnergy >= getEnergyPerExcavation()) {
+				if (targetOrePos == null && (excavationState == ExcavationState.InProgress || excavationState == ExcavationState.NoOreInCurrentPos || excavationState == ExcavationState.CannotOutputMineDrop))
+					targetOrePos = findOrePos();
+
+				if (excavationState == ExcavationState.NoOresInCurrentDepth || excavationState == ExcavationState.NotEnoughDrillTube)
+					tryDrillDownTube();
+				else if (targetOrePos != null && (excavationState == ExcavationState.InProgress || excavationState == ExcavationState.CannotOutputMineDrop))
+					tryMine(targetOrePos);
+						
+				if (excavationState == ExcavationState.InProgress)
+					miningSpentedEnergy -= getEnergyPerExcavation();
 			}
 		}
 
-		if (!exacavationComplete && miningSpentedEnergy >= getEnergyPerExcavation()) {
-			final boolean isMineSucessful = tryMineOre();
-			if (isMineSucessful)
-				miningSpentedEnergy -= getEnergyPerExcavation();
-
-			isActive = isMineSucessful;
-		}
-
-		((BlockMachineBase)world.getBlockState(pos).getBlock()).setActive(isActive, world, pos);
+		((BlockMachineBase)world.getBlockState(pos).getBlock()).setActive(excavationState == ExcavationState.InProgress, world, pos);
 	}
 
-	private boolean tryMineOre() {
+	private BlockPos findOrePos() {
 		final int radius = QMConfig.quarrySqrWorkRadius;
-		exacavationComplete = true;
 
 		final BlockPos upperBlockPos = pos.add(radius, 0, radius);
 		final BlockPos lowerBlockPos = pos.add(-radius, 0, -radius);
 		final ChunkPos upperChunkPos = world.getChunk(upperBlockPos).getPos();
 		final ChunkPos lowerChunkPos = world.getChunk(lowerBlockPos).getPos();
 
-		for (int y = pos.getY(); y >= 0 ; y--)
+		for (int y = getDrillTubeDepth(); y < pos.getY(); y++)
 			for (int chunkX = lowerChunkPos.x; chunkX <= upperChunkPos.x; chunkX++)
 				for (int chunkZ = lowerChunkPos.z; chunkZ <= upperChunkPos.z; chunkZ++)
 					if (world.isChunkLoaded(chunkX, chunkZ))
@@ -148,18 +151,72 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 									BlockState blockState = world.getBlockState(blockPos);
 
 									if (isOre(blockState)) {
-										List<ItemStack> drop = Block.getDroppedStacks(blockState, (ServerWorld)world, pos, null);
-										exacavationComplete = false;
-
-										if (outputSlotGroup.hasSpace(drop)) {
-											outputSlotGroup.addStacks(drop);
-											world.removeBlock(blockPos, false);
-											return true;
-										}
+										excavationState = ExcavationState.InProgress;
+										return blockPos;
 									}
 								}
 							}
-		return false;
+		excavationState = ExcavationState.NoOresInCurrentDepth;
+		return null;
+	}
+
+	private void tryMine(BlockPos blockPos) {
+		if (!isOre(world.getBlockState(blockPos)))
+		{
+			excavationState = ExcavationState.NoOreInCurrentPos;
+			targetOrePos = null;
+			return;
+		}
+
+		List<ItemStack> drop = Block.getDroppedStacks(world.getBlockState(blockPos), (ServerWorld)world, pos, null);
+
+		if (outputSlotGroup.hasSpace(drop)) {
+			outputSlotGroup.addStacks(drop);
+			world.removeBlock(blockPos, false);
+			excavationState = ExcavationState.InProgress;
+		}	
+		else
+			excavationState = ExcavationState.CannotOutputMineDrop;
+	}
+
+	private int getDrillTubeDepth() {
+		for (int y = pos.getY() - 1; y >= 0 ; y--)
+			if (!isDrillTube(world.getBlockState(new BlockPos(pos.getX(), y, pos.getZ()))))
+				return y + 1;
+		return pos.getY();
+	}
+
+	private void tryDrillDownTube() {
+		int newDepth = getDrillTubeDepth() - 1;
+
+		if (newDepth < 0)
+		{
+			excavationState = ExcavationState.Complete;
+			return;
+		}
+
+		BlockPos blockPos = new BlockPos(pos.getX(), newDepth, pos.getZ());
+		BlockState blockState = world.getBlockState(blockPos);
+
+		if (blockState.getHardness(null, null) < 0f)
+		{
+			excavationState = ExcavationState.Complete;
+			return;
+		}
+
+		if (drillTubeSlotGroup.isEmpty() || !drillTubeSlotGroup.tryConsume(new ItemStack(Item.fromBlock(QMContent.DRILL_TUBE))))
+		{
+			excavationState = ExcavationState.NotEnoughDrillTube;
+			return;
+		}
+
+		if (isOre(blockState)) {
+			tryMine(blockPos);
+			return;
+		}
+
+		excavationState = ExcavationState.InProgress;
+		world.setBlockState(blockPos, QMContent.DRILL_TUBE.getDefaultState());
 	}
 
 	private int getTiksPerExcavation() {
@@ -172,6 +229,10 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 
 	private boolean isOre(BlockState state) {
 		return !state.isAir() && (state.getBlock() instanceof OreBlock || state.getBlock() instanceof RedstoneOreBlock);
+	}
+
+	private boolean isDrillTube(BlockState state){
+		return !state.isAir() && (state.getBlock() instanceof BlockDrillTube);
 	}
 
 	@Override
@@ -194,19 +255,16 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		return QMConfig.quarryMaxInput * (1d + getSpeedMultiplier() * QMConfig.quarryMaxInputOverclockerMultipier);
 	}
 
-	// IToolDrop
 	@Override
 	public ItemStack getToolDrop(PlayerEntity entityPlayer) {
 		return QMContent.Machine.QUARRY.getStack();
 	}
 
-	// ItemHandlerProvider
 	@Override
 	public RebornInventory<QuarryBlockEntity> getInventory() {
 		return inventory;
 	}
 
-	// IContainerProvider
 	@Override
 	public BuiltScreenHandler createScreenHandler(int syncID, PlayerEntity player) {
 		return new ScreenHandlerBuilder("quarry").player(player.inventory).inventory().hotbar().addInventory()
@@ -222,8 +280,28 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 				.outputSlot(8, 95, 66)
 				.outputSlot(9, 115, 66)
 				.outputSlot(10, 135, 66)
-				.energySlot(11, 8, 72).syncEnergyValue()
-				.sync(this::getProgress, this::setProgress).addInventory().create(this, syncID);
+				.energySlot(11, 8, 72)
+				.syncEnergyValue()
+				.sync(this::getProgress, this::setProgress)
+				.sync(this::getState, this::setState)
+				.addInventory()
+				.create(this, syncID);
+	}
+
+	private double getProgress() {
+		return miningSpentedEnergy;
+	}
+
+	private void setProgress(double progress) {
+		miningSpentedEnergy = progress;
+	}
+
+	private int getState() {
+		return excavationState.ordinal();
+	}
+
+	private void setState(int state) {
+		excavationState = ExcavationState.values()[state];
 	}
 
 	private static boolean holeFillerFilter(ItemStack stack) {
@@ -242,5 +320,32 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 			return blockItem.getBlock() instanceof BlockDrillTube;
 		}
 		return false;
+	}
+
+
+
+	public enum ExcavationState {
+		Complete,
+		InProgress,
+		NoEnergyIncome,
+		NoOresInCurrentDepth,
+		NoOreInCurrentPos,
+		CannotOutputMineDrop,
+		NotEnoughDrillTube;
+
+		public int getColor() {
+
+			switch (this)
+			{
+				case Complete:
+				return 0x003090;
+				default:
+				return 0XB00000;
+			}
+		}
+
+		public boolean isDisplayed() {
+			return this != InProgress && this != NoEnergyIncome && this != NoOreInCurrentPos;
+		}
 	}
 }
