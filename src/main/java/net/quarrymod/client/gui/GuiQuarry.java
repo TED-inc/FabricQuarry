@@ -48,7 +48,7 @@ public class GuiQuarry extends GuiBase<BuiltScreenHandler> {
 
 		final DisplayState displayState = blockEntity.getDisplayState();
 		if (displayState != DisplayState.Off && displayState != DisplayState.Mining)
-			builder.drawText(matrixStack, this, new LiteralText(blockEntity.getStateName()), 50, 50, displayState.getColor());
+			builder.drawText(matrixStack, this, new TranslatableText("gui.quarrymod.quarry.state_" + blockEntity.getStateName().toLowerCase()), 30, 50, displayState.getColor());
 
 		builder.drawDefaultBackground(matrixStack, this, 28, 25, 80, 6);
 		

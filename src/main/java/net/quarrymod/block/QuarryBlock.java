@@ -64,7 +64,7 @@ public class QuarryBlock extends GenericMachineBlock {
             switch (this)
             {
                 case ExtractTube:
-                return 0x009030;
+                return 0x909090;
                 case Complete:
                 return 0x003090;
                 default:

@@ -286,7 +286,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 			drillTubeSlotGroup.addStack(tubeItem);
 		}
 		else
-			setExcavationState(ExcavationState.CannotOutbuyDrillTube);
+			setExcavationState(ExcavationState.CannotOutputDrillTube);
 	}
 
 	private int getTiksPerExcavation() {
@@ -431,7 +431,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		NoOreInCurrentPos,
 
 		CannotOutputMineDrop,
-		CannotOutbuyDrillTube,
+		CannotOutputDrillTube,
 		NotEnoughDrillTube;
 
 		public boolean isError() {

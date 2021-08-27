@@ -2,5 +2,10 @@
     "block.quarrymod.quarry": "Quarry",
     "block.quarrymod.drill_tube": "Quarry Tube",
     "gui.quarrymod.quarry.filler_blocks": "Filler Blocks",
-    "gui.quarrymod.quarry.drill_tubes": "Quarry Tubes"
+    "gui.quarrymod.quarry.drill_tubes": "Quarry Tubes",
+    "gui.quarrymod.quarry.state_complete": "Complete",
+    "gui.quarrymod.quarry.state_extracttube": "Extracting Tube",
+    "gui.quarrymod.quarry.state_cannotoutputminedrop": "Can't output mine drop",
+    "gui.quarrymod.quarry.state_cannotoutputdrilltube": "Can't output Quarry Tube",
+    "gui.quarrymod.quarry.state_notenoughdrilltube": "Not enough Quarry Tube"
 }
