@@ -62,6 +62,12 @@ public final class SlotGroup<T extends MachineBaseBlockEntity> {
 		}
 	}
 
+	public void addStack(ItemStack stack) {
+		List<ItemStack> list = new ArrayList<>();
+		list.add(stack);
+		addStacks(list);
+	}
+
 	public void addStacks(List<ItemStack> drops){
 		for (ItemStack drop : drops) {
 			for (int slotId : slotList) {

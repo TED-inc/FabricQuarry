@@ -39,7 +39,6 @@ public class GuiQuarry extends GuiBase<BuiltScreenHandler> {
 
 	@Override
 	protected void drawForeground(MatrixStack matrixStack, final int mouseX, final int mouseY) {
-		super.drawForeground(matrixStack, mouseX, mouseY);
 		final Layer layer = Layer.FOREGROUND;
 		
 		if (withinBounds(this, mouseX, mouseY, 28, 18, 107, 37))
@@ -53,6 +52,8 @@ public class GuiQuarry extends GuiBase<BuiltScreenHandler> {
 
 		builder.drawDefaultBackground(matrixStack, this, 28, 25, 80, 6);
 		
+		super.drawForeground(matrixStack, mouseX, mouseY);
+
 		builder.drawProgressBar(matrixStack, this, blockEntity.getProgressScaled(100), 100, 33, 62, mouseX, mouseY, GuiBuilder.ProgressDirection.UP, layer);
 		builder.drawMultiEnergyBar(matrixStack, this, 9, 19, (int) blockEntity.getEnergy(), (int) blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);
 	}
