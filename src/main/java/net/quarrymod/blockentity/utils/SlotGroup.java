@@ -1,5 +1,6 @@
 package net.quarrymod.blockentity.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
@@ -24,6 +25,12 @@ public final class SlotGroup<T extends MachineBaseBlockEntity> {
         return slotStack.isEmpty()
             || ItemUtils.isItemEqual(slotStack, stack, true, true)
             && slotStack.getCount() + stack.getCount() <= stack.getMaxCount();
+	}
+
+	public boolean hasSpace(ItemStack stack) {
+		List<ItemStack> list = new ArrayList<>();
+		list.add(stack);
+		return hasSpace(list);
 	}
 
 	public boolean hasSpace(List<ItemStack> stacks) {
@@ -55,15 +62,45 @@ public final class SlotGroup<T extends MachineBaseBlockEntity> {
 		}
 	}
 
+	public void addStack(ItemStack stack) {
+		List<ItemStack> list = new ArrayList<>();
+		list.add(stack);
+		addStacks(list);
+	}
+
 	public void addStacks(List<ItemStack> drops){
 		for (ItemStack drop : drops) {
-			for (int i = 6; i < 11; i++) {
-				if (hasSpace(i, drop)) {
-					addStack(i, drop);
+			for (int slotId : slotList) {
+				if (hasSpace(slotId, drop)) {
+					addStack(slotId, drop);
 					break;
 				}
 			}
 		}
 		inventory.setHashChanged();
+	}
+
+	public boolean isEmpty() {
+		for (int slotId : slotList)
+			if (!inventory.getStack(slotId).isEmpty())
+				return false;
+
+		return true;
+	}
+
+	public boolean tryConsume(ItemStack stack) {
+		for (int slotId : slotList)
+		{
+			ItemStack slotStack = inventory.getStack(slotId);
+			if (!slotStack.isEmpty()
+			 && ItemUtils.isItemEqual(slotStack, stack, true, true)
+			 && slotStack.getCount() >= stack.getCount()) {
+				slotStack.setCount(slotStack.getCount() - stack.getCount());
+				return true;
+			}
+			// TODO: make it possible to grab from multiple slots
+		}
+
+		return false;
 	}
 }

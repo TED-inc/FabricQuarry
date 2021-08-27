@@ -6,6 +6,6 @@
 		"west": "techreborn:block/machines/tier2_machines/machine_west",
 		"east": "techreborn:block/machines/tier2_machines/machine_east",
 		"south": "techreborn:block/machines/tier2_machines/machine_back",
-		"front": "quarrymod:block/machines/tier2_machines/quarry_front_on"
+		"front": "quarrymod:block/machines/tier2_machines/quarry_front_mining"
     }
 }

@@ -2,5 +2,10 @@
     "block.quarrymod.quarry": "Карьер",
     "block.quarrymod.drill_tube": "Карьерная труба",
     "gui.quarrymod.quarry.filler_blocks": "Блоки заполнения",
-    "gui.quarrymod.quarry.drill_tubes": "Карьерные трубы"
+    "gui.quarrymod.quarry.drill_tubes": "Карьерные трубы",
+    "gui.quarrymod.quarry.state_complete": "Завершено",
+    "gui.quarrymod.quarry.state_extracttube": "Извлкченик карьерных труб",
+    "gui.quarrymod.quarry.state_cannotoutputminedrop": "Нет места для ресурсов",
+    "gui.quarrymod.quarry.state_cannotoutputdrilltube": "Нет места для карьерных труб",
+    "gui.quarrymod.quarry.state_notenoughdrilltube": "Недостаточно карьерных труб"
 }
