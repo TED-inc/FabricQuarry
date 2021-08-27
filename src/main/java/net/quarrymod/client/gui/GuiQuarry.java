@@ -1,9 +1,11 @@
 package net.quarrymod.client.gui;
 
+import net.quarrymod.block.QuarryBlock.DisplayState;
 import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
-
+import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity.ExcavationState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import reborncore.client.gui.builder.GuiBase;
 import reborncore.client.gui.guibuilder.GuiBuilder;
@@ -37,7 +39,6 @@ public class GuiQuarry extends GuiBase<BuiltScreenHandler> {
 
 	@Override
 	protected void drawForeground(MatrixStack matrixStack, final int mouseX, final int mouseY) {
-		super.drawForeground(matrixStack, mouseX, mouseY);
 		final Layer layer = Layer.FOREGROUND;
 		
 		if (withinBounds(this, mouseX, mouseY, 28, 18, 107, 37))
@@ -45,9 +46,14 @@ public class GuiQuarry extends GuiBase<BuiltScreenHandler> {
 		if (withinBounds(this, mouseX, mouseY, 118, 18, 157, 37))
 			builder.drawText(matrixStack, this, new TranslatableText("gui.quarrymod.quarry.drill_tubes"), 30, 40, 0xA0A0A0);
 
+		final DisplayState displayState = blockEntity.getDisplayState();
+		if (displayState != DisplayState.Off && displayState != DisplayState.Mining)
+			builder.drawText(matrixStack, this, new TranslatableText("gui.quarrymod.quarry.state_" + blockEntity.getStateName().toLowerCase()), 30, 50, displayState.getColor());
+
 		builder.drawDefaultBackground(matrixStack, this, 28, 25, 80, 6);
-		builder.drawDefaultBackground(matrixStack, this, 118, 25, 40, 6);
 		
+		super.drawForeground(matrixStack, mouseX, mouseY);
+
 		builder.drawProgressBar(matrixStack, this, blockEntity.getProgressScaled(100), 100, 33, 62, mouseX, mouseY, GuiBuilder.ProgressDirection.UP, layer);
 		builder.drawMultiEnergyBar(matrixStack, this, 9, 19, (int) blockEntity.getEnergy(), (int) blockEntity.getMaxStoredPower(), mouseX, mouseY, 0, layer);
 	}
