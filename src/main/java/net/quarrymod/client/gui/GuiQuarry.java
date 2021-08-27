@@ -1,5 +1,6 @@
 package net.quarrymod.client.gui;
 
+import net.quarrymod.block.QuarryBlock.DisplayState;
 import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
 import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity.ExcavationState;
 import net.minecraft.client.util.math.MatrixStack;
@@ -46,9 +47,9 @@ public class GuiQuarry extends GuiBase<BuiltScreenHandler> {
 		if (withinBounds(this, mouseX, mouseY, 118, 18, 157, 37))
 			builder.drawText(matrixStack, this, new TranslatableText("gui.quarrymod.quarry.drill_tubes"), 30, 40, 0xA0A0A0);
 
-		final ExcavationState state = blockEntity.getExcavationState();
-		if (state.isDisplayed())
-			builder.drawText(matrixStack, this, new LiteralText(state.toString()), 50, 50, state.getColor());
+		final DisplayState displayState = blockEntity.getDisplayState();
+		if (displayState != DisplayState.Off && displayState != DisplayState.Mining)
+			builder.drawText(matrixStack, this, new LiteralText(blockEntity.getStateName()), 50, 50, displayState.getColor());
 
 		builder.drawDefaultBackground(matrixStack, this, 28, 25, 80, 6);
 		

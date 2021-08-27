@@ -1,12 +1,28 @@
 {
     "variants": {
-        "facing=north,active=false": { "model": "quarrymod:block/machines/tier2_machines/quarry" },
-        "facing=south,active=false": { "model": "quarrymod:block/machines/tier2_machines/quarry", "y": 180 },
-        "facing=west,active=false":  { "model": "quarrymod:block/machines/tier2_machines/quarry", "y": 270 },
-        "facing=east,active=false":  { "model": "quarrymod:block/machines/tier2_machines/quarry", "y": 90 },
-        "facing=north,active=true": { "model": "quarrymod:block/machines/tier2_machines/quarry_on" },
-        "facing=south,active=true": { "model": "quarrymod:block/machines/tier2_machines/quarry_on", "y": 180 },
-        "facing=west,active=true":  { "model": "quarrymod:block/machines/tier2_machines/quarry_on", "y": 270 },
-        "facing=east,active=true":  { "model": "quarrymod:block/machines/tier2_machines/quarry_on", "y": 90 }
+        "facing=north,state=off": { "model": "quarrymod:block/machines/tier2_machines/quarry_off" },
+        "facing=south,state=off": { "model": "quarrymod:block/machines/tier2_machines/quarry_off", "y": 180 },
+        "facing=west,state=off":  { "model": "quarrymod:block/machines/tier2_machines/quarry_off", "y": 270 },
+        "facing=east,state=off":  { "model": "quarrymod:block/machines/tier2_machines/quarry_off", "y": 90 },
+
+        "facing=north,state=mining": { "model": "quarrymod:block/machines/tier2_machines/quarry_mining" },
+        "facing=south,state=mining": { "model": "quarrymod:block/machines/tier2_machines/quarry_mining", "y": 180 },
+        "facing=west,state=mining":  { "model": "quarrymod:block/machines/tier2_machines/quarry_mining", "y": 270 },
+        "facing=east,state=mining":  { "model": "quarrymod:block/machines/tier2_machines/quarry_mining", "y": 90 },
+
+        "facing=north,state=extract_tube": { "model": "quarrymod:block/machines/tier2_machines/quarry_extract_tube" },
+        "facing=south,state=extract_tube": { "model": "quarrymod:block/machines/tier2_machines/quarry_extract_tube", "y": 180 },
+        "facing=west,state=extract_tube":  { "model": "quarrymod:block/machines/tier2_machines/quarry_extract_tube", "y": 270 },
+        "facing=east,state=extract_tube":  { "model": "quarrymod:block/machines/tier2_machines/quarry_extract_tube", "y": 90 },
+
+        "facing=north,state=error": { "model": "quarrymod:block/machines/tier2_machines/quarry_error" },
+        "facing=south,state=error": { "model": "quarrymod:block/machines/tier2_machines/quarry_error", "y": 180 },
+        "facing=west,state=error":  { "model": "quarrymod:block/machines/tier2_machines/quarry_error", "y": 270 },
+        "facing=east,state=error":  { "model": "quarrymod:block/machines/tier2_machines/quarry_error", "y": 90 },
+
+        "facing=north,state=complete": { "model": "quarrymod:block/machines/tier2_machines/quarry_complete" },
+        "facing=south,state=complete": { "model": "quarrymod:block/machines/tier2_machines/quarry_complete", "y": 180 },
+        "facing=west,state=complete":  { "model": "quarrymod:block/machines/tier2_machines/quarry_complete", "y": 270 },
+        "facing=east,state=complete":  { "model": "quarrymod:block/machines/tier2_machines/quarry_complete", "y": 90 }
     }
 }

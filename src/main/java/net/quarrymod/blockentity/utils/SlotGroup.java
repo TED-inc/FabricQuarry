@@ -1,5 +1,6 @@
 package net.quarrymod.blockentity.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
@@ -24,6 +25,12 @@ public final class SlotGroup<T extends MachineBaseBlockEntity> {
         return slotStack.isEmpty()
             || ItemUtils.isItemEqual(slotStack, stack, true, true)
             && slotStack.getCount() + stack.getCount() <= stack.getMaxCount();
+	}
+
+	public boolean hasSpace(ItemStack stack) {
+		List<ItemStack> list = new ArrayList<>();
+		list.add(stack);
+		return hasSpace(list);
 	}
 
 	public boolean hasSpace(List<ItemStack> stacks) {

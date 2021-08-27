@@ -1,5 +1,7 @@
 package net.quarrymod.blockentity.machine.tier3;
 
+import net.quarrymod.block.QuarryBlock;
+import net.quarrymod.block.QuarryBlock.DisplayState;
 import net.quarrymod.block.misc.BlockDrillTube;
 import net.quarrymod.blockentity.utils.SlotGroup;
 import net.quarrymod.config.QMConfig;
@@ -7,6 +9,8 @@ import net.quarrymod.init.QMBlockEntities;
 import net.quarrymod.init.QMContent;
 
 import java.util.List;
+
+import com.ibm.icu.text.LocaleDisplayNames.DialectHandling;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -17,6 +21,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -26,17 +31,17 @@ import reborncore.api.blockentity.InventoryProvider;
 import reborncore.client.screen.BuiltScreenHandlerProvider;
 import reborncore.client.screen.builder.BuiltScreenHandler;
 import reborncore.client.screen.builder.ScreenHandlerBuilder;
-import reborncore.common.blocks.BlockMachineBase;
 import reborncore.common.powerSystem.PowerAcceptorBlockEntity;
 import reborncore.common.util.RebornInventory;
+
 import team.reborn.energy.EnergySide;
 import techreborn.init.TRContent;
 
 public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements IToolDrop, InventoryProvider, BuiltScreenHandlerProvider {
-
 	public RebornInventory<QuarryBlockEntity> inventory = new RebornInventory<>(12, "QuarryBlockEntity", 64, this);
 	private double miningSpentedEnergy = 0;
 	private ExcavationState excavationState = ExcavationState.InProgress;
+	private ExcavationWorkType excavationWorkType = ExcavationWorkType.Mining;
 	private BlockPos targetOrePos;
 
 	private SlotGroup<QuarryBlockEntity> holeFillerSlotGroup = new SlotGroup<>(inventory, new int[] { 0, 1, 2, 3 });
@@ -85,6 +90,53 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		return excavationState;
 	}
 
+	private void setExcavationState(ExcavationState state) {
+		if (excavationState == state)
+			return;
+
+		excavationState = state;
+		RefreshProperty();
+	}
+
+	public ExcavationWorkType getExcavationWorkType() {
+		return excavationWorkType;
+	}
+
+	private void setExcavationWorkType(ExcavationWorkType workType) {
+		if (excavationWorkType == workType)
+			return;
+
+		excavationWorkType = workType;
+		RefreshProperty();
+	}
+
+	private void RefreshProperty() {
+		if (world != null)
+			((QuarryBlock)world.getBlockState(pos).getBlock()).setState(getDisplayState(), world, pos);
+	}
+
+	public DisplayState getDisplayState() {
+		DisplayState state = DisplayState.Off;
+
+		if (excavationState.isError())
+			state = DisplayState.Error;
+		else if (excavationState == ExcavationState.InProgress)
+			state = excavationWorkType == ExcavationWorkType.Mining ? 
+				DisplayState.Mining : 
+				DisplayState.ExtractTube;
+		else if (excavationState == ExcavationState.Complete)
+			state = DisplayState.Complete;
+
+		return state;
+	}
+
+	public String getStateName() {
+		if (excavationWorkType == ExcavationWorkType.ExtractTube)
+			return ExcavationWorkType.ExtractTube.toString();
+		else
+			return excavationState.toString();
+	}
+
 	@Override
 	public void tick() {
 		super.tick();
@@ -102,27 +154,35 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 				if (euAvailable > 0d) {
 					useEnergy(euAvailable);
 					miningSpentedEnergy += euAvailable;
-					excavationState = ExcavationState.InProgress;
+					setExcavationState(ExcavationState.InProgress);
 				}
 				else
-					excavationState = ExcavationState.NoEnergyIncome;
+					setExcavationState(ExcavationState.NoEnergyIncome);
 			}
 
 			if (miningSpentedEnergy >= getEnergyPerExcavation()) {
-				if (targetOrePos == null && (excavationState == ExcavationState.InProgress || excavationState == ExcavationState.NoOreInCurrentPos || excavationState == ExcavationState.CannotOutputMineDrop))
-					targetOrePos = findOrePos();
+				if (excavationWorkType == ExcavationWorkType.ExtractTube)
+				{
+					if (drillTubeSlotGroup.hasSpace(new ItemStack(Item.fromBlock(QMContent.DRILL_TUBE))))
+					{
 
-				if (excavationState == ExcavationState.NoOresInCurrentDepth || excavationState == ExcavationState.NotEnoughDrillTube)
-					tryDrillDownTube();
-				else if (targetOrePos != null && (excavationState == ExcavationState.InProgress || excavationState == ExcavationState.CannotOutputMineDrop))
-					tryMine(targetOrePos);
-						
-				if (excavationState == ExcavationState.InProgress)
-					miningSpentedEnergy -= getEnergyPerExcavation();
+					}
+				}	
+				else
+				{
+					if (targetOrePos == null && (excavationState == ExcavationState.InProgress || excavationState == ExcavationState.NoOreInCurrentPos || excavationState == ExcavationState.CannotOutputMineDrop))
+						targetOrePos = findOrePos();
+
+					if (excavationState == ExcavationState.NoOresInCurrentDepth || excavationState == ExcavationState.NotEnoughDrillTube)
+						tryDrillDownTube();
+					else if (targetOrePos != null && (excavationState == ExcavationState.InProgress || excavationState == ExcavationState.CannotOutputMineDrop))
+						tryMine(targetOrePos);
+							
+					if (excavationState == ExcavationState.InProgress)
+						miningSpentedEnergy -= getEnergyPerExcavation();
+				}
 			}
 		}
-
-		((BlockMachineBase)world.getBlockState(pos).getBlock()).setActive(excavationState == ExcavationState.InProgress, world, pos);
 	}
 
 	private BlockPos findOrePos() {
@@ -151,19 +211,19 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 									BlockState blockState = world.getBlockState(blockPos);
 
 									if (isOre(blockState)) {
-										excavationState = ExcavationState.InProgress;
+										setExcavationState(ExcavationState.InProgress);
 										return blockPos;
 									}
 								}
 							}
-		excavationState = ExcavationState.NoOresInCurrentDepth;
+		setExcavationState(ExcavationState.NoOresInCurrentDepth);
 		return null;
 	}
 
 	private void tryMine(BlockPos blockPos) {
 		if (!isOre(world.getBlockState(blockPos)))
 		{
-			excavationState = ExcavationState.NoOreInCurrentPos;
+			setExcavationState(ExcavationState.NoOreInCurrentPos);
 			targetOrePos = null;
 			return;
 		}
@@ -173,10 +233,10 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		if (outputSlotGroup.hasSpace(drop)) {
 			outputSlotGroup.addStacks(drop);
 			world.removeBlock(blockPos, false);
-			excavationState = ExcavationState.InProgress;
+			setExcavationState(ExcavationState.InProgress);
 		}	
 		else
-			excavationState = ExcavationState.CannotOutputMineDrop;
+			setExcavationState(ExcavationState.CannotOutputMineDrop);
 	}
 
 	private int getDrillTubeDepth() {
@@ -191,7 +251,8 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 
 		if (newDepth < 0)
 		{
-			excavationState = ExcavationState.Complete;
+			setExcavationWorkType(ExcavationWorkType.ExtractTube);
+			setExcavationState(ExcavationState.InProgress);
 			return;
 		}
 
@@ -200,13 +261,14 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 
 		if (blockState.getHardness(null, null) < 0f)
 		{
-			excavationState = ExcavationState.Complete;
+			setExcavationWorkType(ExcavationWorkType.ExtractTube);
+			setExcavationState(ExcavationState.InProgress);
 			return;
 		}
 
 		if (drillTubeSlotGroup.isEmpty() || !drillTubeSlotGroup.tryConsume(new ItemStack(Item.fromBlock(QMContent.DRILL_TUBE))))
 		{
-			excavationState = ExcavationState.NotEnoughDrillTube;
+			setExcavationState(ExcavationState.NotEnoughDrillTube);
 			return;
 		}
 
@@ -215,7 +277,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 			return;
 		}
 
-		excavationState = ExcavationState.InProgress;
+		setExcavationState(ExcavationState.InProgress);
 		world.setBlockState(blockPos, QMContent.DRILL_TUBE.getDefaultState());
 	}
 
@@ -284,8 +346,29 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 				.syncEnergyValue()
 				.sync(this::getProgress, this::setProgress)
 				.sync(this::getState, this::setState)
+				.sync(this::getWorkType, this::setWorkType)
 				.addInventory()
 				.create(this, syncID);
+	}
+
+	@Override
+	public void fromTag(BlockState blockState, CompoundTag tag) {
+		super.fromTag(blockState, tag);
+		CompoundTag data = tag.getCompound("Quarry");
+		setState(data.getInt("state"));
+		setWorkType(data.getInt("workType"));
+		setProgress(data.getDouble("progress"));
+	}
+
+	@Override
+	public CompoundTag toTag(CompoundTag tag) {
+		super.toTag(tag);
+		CompoundTag data = new CompoundTag();
+		data.putInt("state", getState());
+		data.putInt("workType", getWorkType());
+		data.putDouble("progress", getProgress());
+		tag.put("Quarry", data);
+		return tag;
 	}
 
 	private double getProgress() {
@@ -301,7 +384,15 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	}
 
 	private void setState(int state) {
-		excavationState = ExcavationState.values()[state];
+		setExcavationState(ExcavationState.values()[state]);
+	}
+
+	private int getWorkType() {
+		return excavationWorkType.ordinal();
+	}
+
+	private void setWorkType(int state) {
+		excavationWorkType = ExcavationWorkType.values()[state];
 	}
 
 	private static boolean holeFillerFilter(ItemStack stack) {
@@ -322,30 +413,25 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		return false;
 	}
 
-
-
 	public enum ExcavationState {
-		Complete,
 		InProgress,
+		Complete,
+
 		NoEnergyIncome,
+
 		NoOresInCurrentDepth,
 		NoOreInCurrentPos,
+
 		CannotOutputMineDrop,
 		NotEnoughDrillTube;
 
-		public int getColor() {
-
-			switch (this)
-			{
-				case Complete:
-				return 0x003090;
-				default:
-				return 0XB00000;
-			}
+		public boolean isError() {
+			return this == CannotOutputMineDrop || this == NotEnoughDrillTube;
 		}
+	}
 
-		public boolean isDisplayed() {
-			return this != InProgress && this != NoEnergyIncome && this != NoOreInCurrentPos;
-		}
+	public enum ExcavationWorkType {
+		Mining,
+		ExtractTube,
 	}
 }
