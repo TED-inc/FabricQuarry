@@ -81,10 +81,6 @@ public class GuiQuarry extends GuiBase<BuiltScreenHandler> {
 		return (mouseX > xMin && mouseX < xMax) && (mouseY > yMin && mouseY < yMax);
 	}
 
-	public void onClick(GuiButtonExtended button, Double x, Double y) {
-		NetworkManager.sendToServer(QMServerboundPackets.createPacketQuarryMineAll(blockEntity, !blockEntity.getMineAll()));
-	}
-
 	public void changeMineAll(boolean mineAll) {
 		NetworkManager.sendToServer(QMServerboundPackets.createPacketQuarryMineAll(blockEntity, mineAll));
 	}
