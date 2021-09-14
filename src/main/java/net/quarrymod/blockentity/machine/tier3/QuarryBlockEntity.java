@@ -37,11 +37,13 @@ import team.reborn.energy.EnergySide;
 
 public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements IToolDrop, InventoryProvider, BuiltScreenHandlerProvider {
 	public RebornInventory<QuarryBlockEntity> inventory = new RebornInventory<>(12, "QuarryBlockEntity", 64, this);
+	
 	private double miningSpentedEnergy = 0;
 	private ExcavationState excavationState = ExcavationState.InProgress;
 	private ExcavationWorkType excavationWorkType = ExcavationWorkType.Mining;
-	private BlockPos targetOrePos;
+	private boolean isMineAll = false;
 
+	private BlockPos targetOrePos;
 	private int currentTickTime = 0;
 
 	private SlotGroup<QuarryBlockEntity> holeFillerSlotGroup = new SlotGroup<>(inventory, new int[] { 0, 1, 2, 3 });
@@ -63,6 +65,28 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 
 	public ExcavationState getExcavationState() {
 		return excavationState;
+	}
+
+	public boolean getMineAll() {
+		switch (QMConfig.quarryAccessibleExcavationModes){
+			case 1: // ores only
+			return false;
+			case 2: // all only
+			return true;
+			default:
+			return isMineAll;
+		}
+	}
+
+	public void setMineAll(boolean mineAll) {
+		switch (QMConfig.quarryAccessibleExcavationModes){
+			case 1: // ores only
+			isMineAll = false;
+			case 2: // all only
+			isMineAll = true;
+			default:
+			isMineAll = mineAll;
+		}
 	}
 
 	private void setExcavationState(ExcavationState state) {
@@ -298,7 +322,10 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	}
 
 	private boolean isOre(BlockState state) {
-		return !state.isAir() && (state.getBlock() instanceof OreBlock || state.getBlock() instanceof RedstoneOreBlock);
+		return !state.isAir() 
+		&& (getMineAll() || (state.getBlock() instanceof OreBlock || state.getBlock() instanceof RedstoneOreBlock)) 
+		&& state.getHardness(null, null) >= 0f
+		&& !isDrillTube(state);
 	}
 
 	private boolean isDrillTube(BlockState state){
@@ -355,6 +382,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 				.sync(this::getProgress, this::setProgress)
 				.sync(this::getState, this::setState)
 				.sync(this::getWorkType, this::setWorkType)
+				.sync(this::getMiningAll, this::setMiningAll)
 				.addInventory()
 				.create(this, syncID);
 	}
@@ -366,6 +394,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		setState(data.getInt("state"));
 		setWorkType(data.getInt("workType"));
 		setProgress(data.getDouble("progress"));
+		setMiningAll(data.getInt("mineAll"));
 	}
 
 	@Override
@@ -375,6 +404,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		data.putInt("state", getState());
 		data.putInt("workType", getWorkType());
 		data.putDouble("progress", getProgress());
+		data.putInt("mineAll", getMiningAll());
 		tag.put("Quarry", data);
 		return tag;
 	}
@@ -402,6 +432,15 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	private void setWorkType(int state) {
 		excavationWorkType = ExcavationWorkType.values()[state];
 	}
+
+	private int getMiningAll() {
+		return getMineAll() ? 1 : 0;
+	}
+
+	private void setMiningAll(int mineAll) {
+		setMineAll(mineAll == 1);
+	}
+
 
 	private static boolean holeFillerFilter(ItemStack stack) {
 		Item item = stack.getItem();
