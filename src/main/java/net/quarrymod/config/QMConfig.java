@@ -1,5 +1,8 @@
 package net.quarrymod.config;
 
+import java.util.Arrays;
+import java.util.List;
+
 import reborncore.common.config.Config;
 
 public class QMConfig {
@@ -25,6 +28,9 @@ public class QMConfig {
     @Config(config = "machines", category = "quarry", key = "QuarrySqrWorkRadius", comment = "Quarry Sqr Work Radius, square radius of work, in blocks")
 	public static int quarrySqrWorkRadius = 8;
 
-    @Config(config = "machines", category = "quarry", key = "QuarryAccessibleExcavationModes", comment = "quarry Accessible Excavation Modes, 1 - ores only, 2 - all only, 3 - all and ores")
+    @Config(config = "machines", category = "quarry", key = "QuarryAccessibleExcavationModes", comment = "Quarry Accessible Excavation Modes, 1 - ores only, 2 - all only, 3 - all and ores")
 	public static int quarryAccessibleExcavationModes = 3;
+
+    @Config(config = "machines", category = "quarry", key = "QuarryAdditioanlBlocksToMine", comment = "Additioanl Blocks to Mine list")
+	public static List<String> quarryAdditioanlBlocksToMine = Arrays.asList("minecraft:ancient_debris");
 }
