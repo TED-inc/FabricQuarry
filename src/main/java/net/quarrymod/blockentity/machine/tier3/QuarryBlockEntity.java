@@ -23,6 +23,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.Registry;
 
 import reborncore.api.IToolDrop;
 import reborncore.api.blockentity.InventoryProvider;
@@ -322,8 +323,13 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	}
 
 	private boolean isOre(BlockState state) {
+		Block block = state.getBlock();
+
 		return !state.isAir() 
-		&& (getMineAll() || (state.getBlock() instanceof OreBlock || state.getBlock() instanceof RedstoneOreBlock)) 
+		&& (getMineAll()
+			|| block instanceof OreBlock
+			|| block instanceof RedstoneOreBlock
+			|| QMConfig.quarryAdditioanlBlocksToMine.contains(Registry.BLOCK.getId(block).toString())) 
 		&& state.getHardness(null, null) >= 0f
 		&& !isDrillTube(state);
 	}
