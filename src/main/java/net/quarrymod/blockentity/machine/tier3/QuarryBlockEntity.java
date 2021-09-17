@@ -10,6 +10,8 @@ import net.quarrymod.init.QMContent;
 
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidBlock;
@@ -24,6 +26,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
@@ -37,12 +40,10 @@ import reborncore.common.powerSystem.PowerAcceptorBlockEntity;
 import reborncore.common.recipes.RecipeCrafter;
 import reborncore.common.util.RebornInventory;
 
-import team.reborn.energy.EnergySide;
-
 public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements IToolDrop, InventoryProvider, BuiltScreenHandlerProvider {
 	public RebornInventory<QuarryBlockEntity> inventory = new RebornInventory<>(12, "QuarryBlockEntity", 64, this);
 	
-	private double miningSpentedEnergy = 0;
+	private long miningSpentedEnergy = 0;
 	private ExcavationState excavationState = ExcavationState.InProgress;
 	private ExcavationWorkType excavationWorkType = ExcavationWorkType.Mining;
 	private boolean isMineAll = false;
@@ -143,7 +144,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	public void resetOnPlaced() {
 		setExcavationState(ExcavationState.InProgress);
 		setExcavationWorkType(ExcavationWorkType.Mining);
-		setProgress(0d);
+		setProgress(0);
 	}
 
 	@Override
@@ -158,8 +159,8 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		if (excavationState != ExcavationState.Complete)
 		{
 			if (miningSpentedEnergy < getEnergyPerExcavation()) {
-				final double euNeeded = getEnergyPerExcavation() / getTiksPerExcavation();
-				final double euAvailable = Math.min(euNeeded, getStored(EnergySide.UNKNOWN));
+				final long euNeeded = getEnergyPerExcavation() / getTiksPerExcavation();
+				final long euAvailable = Math.min(euNeeded, getStored());
 				if (euAvailable > 0d) {
 					useEnergy(euAvailable);
 					miningSpentedEnergy += euAvailable;
@@ -323,8 +324,8 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		return Math.max((int) (QMConfig.quarryTiksPerExcavation * (1d - getSpeedMultiplier())), QMConfig.quarryMinTiksPerExcavation);
 	}
 
-	private double getEnergyPerExcavation() {
-		return QMConfig.quarryEnergyPerExcavation * getPowerMultiplier();
+	private long getEnergyPerExcavation() {
+		return (long)(QMConfig.quarryEnergyPerExcavation * getPowerMultiplier());
 	}
 
 	private boolean isOre(BlockState state) {
@@ -345,23 +346,23 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	}
 
 	@Override
-	public double getBaseMaxPower() {
+	public long getBaseMaxPower() {
 		return QMConfig.quarryMaxEnergy;
 	}
 
 	@Override
-	public boolean canProvideEnergy(EnergySide side) {
+	public boolean canProvideEnergy(@Nullable Direction side) {
 		return false;
 	}
 
 	@Override
-	public double getBaseMaxOutput() {
+	public long getBaseMaxOutput() {
 		return 0;
 	}
 
 	@Override
-	public double getBaseMaxInput() {
-		return QMConfig.quarryMaxInput * (1d + getSpeedMultiplier() * QMConfig.quarryMaxInputOverclockerMultipier);
+	public long getBaseMaxInput() {
+		return (long)(QMConfig.quarryMaxInput * (1d + getSpeedMultiplier() * QMConfig.quarryMaxInputOverclockerMultipier));
 	}
 
 	@Override
@@ -405,7 +406,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		NbtCompound data = tag.getCompound("Quarry");
 		setState(data.getInt("state"));
 		setWorkType(data.getInt("workType"));
-		setProgress(data.getDouble("progress"));
+		setProgress(data.getLong("progress"));
 		setMiningAll(data.getInt("mineAll"));
 	}
 
@@ -415,17 +416,17 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		NbtCompound data = new NbtCompound();
 		data.putInt("state", getState());
 		data.putInt("workType", getWorkType());
-		data.putDouble("progress", getProgress());
+		data.putLong("progress", getProgress());
 		data.putInt("mineAll", getMiningAll());
 		tag.put("Quarry", data);
 		return tag;
 	}
 
-	private double getProgress() {
+	private long getProgress() {
 		return miningSpentedEnergy;
 	}
 
-	private void setProgress(double progress) {
+	private void setProgress(long progress) {
 		miningSpentedEnergy = progress;
 	}
 
