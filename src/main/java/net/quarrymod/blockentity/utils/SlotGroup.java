@@ -88,19 +88,25 @@ public final class SlotGroup<T extends MachineBaseBlockEntity> {
 		return true;
 	}
 
-	public boolean tryConsume(ItemStack stack) {
+	public void consume(ItemStack stack) {
+		ItemStack slotStack = getConsumeSlot(stack);
+		slotStack.setCount(slotStack.getCount() - stack.getCount());
+	}
+
+	public boolean canConsume(ItemStack stack) {
+		return getConsumeSlot(stack) != null;
+	}
+
+	// TODO: make it possible to grab from multiple slots
+	private ItemStack getConsumeSlot(ItemStack stack) {
 		for (int slotId : slotList)
 		{
 			ItemStack slotStack = inventory.getStack(slotId);
 			if (!slotStack.isEmpty()
 			 && ItemUtils.isItemEqual(slotStack, stack, true, true)
-			 && slotStack.getCount() >= stack.getCount()) {
-				slotStack.setCount(slotStack.getCount() - stack.getCount());
-				return true;
-			}
-			// TODO: make it possible to grab from multiple slots
+			 && slotStack.getCount() >= stack.getCount())
+				return slotStack;
 		}
-
-		return false;
+		return null;
 	}
 }

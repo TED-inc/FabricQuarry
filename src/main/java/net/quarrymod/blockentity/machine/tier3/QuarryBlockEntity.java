@@ -12,6 +12,7 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.FluidBlock;
 import net.minecraft.block.Material;
 import net.minecraft.block.OreBlock;
 import net.minecraft.block.RedstoneOreBlock;
@@ -272,6 +273,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 
 		BlockPos blockPos = new BlockPos(pos.getX(), newDepth, pos.getZ());
 		BlockState blockState = world.getBlockState(blockPos);
+		ItemStack drillTubeItem = new ItemStack(Item.fromBlock(QMContent.DRILL_TUBE));
 
 		if (blockState.getHardness(null, null) < 0f)
 		{
@@ -280,7 +282,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 			return;
 		}
 
-		if (drillTubeSlotGroup.isEmpty() || !drillTubeSlotGroup.tryConsume(new ItemStack(Item.fromBlock(QMContent.DRILL_TUBE))))
+		if (drillTubeSlotGroup.isEmpty() || !drillTubeSlotGroup.canConsume(drillTubeItem))
 		{
 			setExcavationState(ExcavationState.NotEnoughDrillTube);
 			return;
@@ -291,6 +293,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 			return;
 		}
 
+		drillTubeSlotGroup.consume(drillTubeItem);
 		setExcavationState(ExcavationState.InProgress);
 		world.setBlockState(blockPos, QMContent.DRILL_TUBE.getDefaultState());
 	}
@@ -328,6 +331,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		Block block = state.getBlock();
 
 		return !state.isAir() 
+		&& !(block instanceof FluidBlock)
 		&& (getMineAll()
 			|| block instanceof OreBlock
 			|| block instanceof RedstoneOreBlock
