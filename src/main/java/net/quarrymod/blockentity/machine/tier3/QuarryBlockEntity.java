@@ -218,9 +218,8 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 									blockZ >= lowerBlockPos.getZ()) 
 								{
 									BlockPos blockPos = new BlockPos(blockX, y, blockZ);
-									BlockState blockState = world.getBlockState(blockPos);
 
-									if (isOre(blockState)) {
+									if (isOre(blockPos)) {
 										setExcavationState(ExcavationState.InProgress);
 										return blockPos;
 									}
@@ -231,14 +230,14 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	}
 
 	private void tryMine(BlockPos blockPos) {
-		if (!isOre(world.getBlockState(blockPos)))
+		if (!isOre(blockPos))
 		{
 			setExcavationState(ExcavationState.NoOreInCurrentPos);
 			targetOrePos = null;
 			return;
 		}
 
-		List<ItemStack> drop = Block.getDroppedStacks(world.getBlockState(blockPos), (ServerWorld)world, pos, null);
+		List<ItemStack> drop = Block.getDroppedStacks(world.getBlockState(blockPos), (ServerWorld)world, pos, world.getBlockEntity(blockPos));
 
 		if (outputSlotGroup.hasSpace(drop)) {
 			outputSlotGroup.addStacks(drop);
@@ -276,7 +275,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		BlockState blockState = world.getBlockState(blockPos);
 		ItemStack drillTubeItem = new ItemStack(Item.fromBlock(QMContent.DRILL_TUBE));
 
-		if (blockState.getHardness(null, null) < 0f)
+		if (blockState.getHardness(world, blockPos) < 0f)
 		{
 			setExcavationWorkType(ExcavationWorkType.ExtractTube);
 			setExcavationState(ExcavationState.InProgress);
@@ -289,7 +288,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 			return;
 		}
 
-		if (isOre(blockState)) {
+		if (isOre(blockPos)) {
 			tryMine(blockPos);
 			return;
 		}
@@ -328,7 +327,8 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		return (long)(QMConfig.quarryEnergyPerExcavation * getPowerMultiplier());
 	}
 
-	private boolean isOre(BlockState state) {
+	private boolean isOre(BlockPos blockPos) {
+		BlockState state = world.getBlockState(blockPos);
 		Block block = state.getBlock();
 
 		return !state.isAir() 
@@ -337,7 +337,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 			|| block instanceof OreBlock
 			|| block instanceof RedstoneOreBlock
 			|| QMConfig.quarryAdditioanlBlocksToMine.contains(Registry.BLOCK.getId(block).toString())) 
-		&& state.getHardness(null, null) >= 0f
+		&& state.getHardness(world, blockPos) >= 0f
 		&& !isDrillTube(state);
 	}
 
