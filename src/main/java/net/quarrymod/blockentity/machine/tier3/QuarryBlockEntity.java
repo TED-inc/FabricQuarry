@@ -250,19 +250,19 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	private int getDrillTubeDepth() {
 		boolean hasTubes = false;
 
-		for (int y = pos.getY() - 1; y >= 0 ; y--)
+		for (int y = pos.getY() - 1; y >= world.getBottomY() ; y--)
 			if (!isDrillTube(world.getBlockState(new BlockPos(pos.getX(), y, pos.getZ()))))
 				return y + 1;
 			else
 				hasTubes = true;
 
-		return hasTubes ? 0 : pos.getY();
+		return hasTubes ? world.getBottomY() : pos.getY();
 	}
 
 	private void tryDrillDownTube() {
 		int newDepth = getDrillTubeDepth() - 1;
 
-		if (newDepth < 0)
+		if (newDepth < world.getBottomY())
 		{
 			setExcavationWorkType(ExcavationWorkType.ExtractTube);
 			setExcavationState(ExcavationState.InProgress);
