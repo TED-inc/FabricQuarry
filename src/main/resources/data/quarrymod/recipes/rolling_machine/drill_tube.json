@@ -11,7 +11,7 @@
         "item": "techreborn:advanced_alloy_plate"
       },
       "S": {
-        "item": "techreborn:steel_plate"
+        "tag": "c:steel_plates"
       }
     },
     "result": {
