@@ -16,10 +16,10 @@
         "item": "techreborn:extractor"
       },
       "I": {
-        "item": "techreborn:iridium_ingot"
+        "tag": "c:iridium_ingots"
       },
       "S": {
-        "item": "techreborn:steel_plate"
+        "tag": "c:steel_plates"
       },
       "D": {
         "item": "techreborn:advanced_drill"

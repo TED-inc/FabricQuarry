@@ -16,8 +16,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.block.Material;
-import net.minecraft.block.OreBlock;
-import net.minecraft.block.RedstoneOreBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -333,12 +331,14 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 
 		return !state.isAir() 
 		&& !(block instanceof FluidBlock)
-		&& (getMineAll()
-			|| block instanceof OreBlock
-			|| block instanceof RedstoneOreBlock
-			|| QMConfig.quarryAdditioanlBlocksToMine.contains(Registry.BLOCK.getId(block).toString())) 
 		&& state.getHardness(world, blockPos) >= 0f
-		&& !isDrillTube(state);
+		&& !isDrillTube(state)
+		&& (getMineAll() || isOreCheckId(Registry.BLOCK.getId(block).toString()));
+	}
+
+	boolean isOreCheckId(String id) {
+		return id.endsWith("_ore") 
+			|| QMConfig.quarryAdditioanlBlocksToMine.contains(id);
 	}
 
 	private boolean isDrillTube(BlockState state){
