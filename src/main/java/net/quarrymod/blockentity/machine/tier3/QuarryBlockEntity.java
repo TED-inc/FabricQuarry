@@ -7,18 +7,23 @@ import net.quarrymod.blockentity.utils.SlotGroup;
 import net.quarrymod.config.QMConfig;
 import net.quarrymod.init.QMBlockEntities;
 import net.quarrymod.init.QMContent;
+import net.quarrymod.items.IQuarryUpgrade;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.block.Material;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -26,6 +31,7 @@ import net.minecraft.util.registry.Registry;
 
 import reborncore.api.IToolDrop;
 import reborncore.api.blockentity.InventoryProvider;
+import reborncore.client.gui.slots.BaseSlot;
 import reborncore.client.screen.BuiltScreenHandlerProvider;
 import reborncore.client.screen.builder.BuiltScreenHandler;
 import reborncore.client.screen.builder.ScreenHandlerBuilder;
@@ -36,7 +42,12 @@ import reborncore.common.util.RebornInventory;
 import team.reborn.energy.EnergySide;
 
 public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements IToolDrop, InventoryProvider, BuiltScreenHandlerProvider {
+	public int extenderLevel;
+	public int fortuneLevel;
+	public boolean isSilkTouch;
+
 	public RebornInventory<QuarryBlockEntity> inventory = new RebornInventory<>(12, "QuarryBlockEntity", 64, this);
+	private RebornInventory<QuarryBlockEntity> quarryUpgradesInventory = new RebornInventory<>(2, "QuarryUpgrades", 1, this);
 	
 	private double miningSpentedEnergy = 0;
 	private ExcavationState excavationState = ExcavationState.InProgress;
@@ -49,7 +60,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	private SlotGroup<QuarryBlockEntity> holeFillerSlotGroup = new SlotGroup<>(inventory, new int[] { 0, 1, 2, 3 });
 	private SlotGroup<QuarryBlockEntity> drillTubeSlotGroup = new SlotGroup<>(inventory, new int[] { 4, 5 });
 	private SlotGroup<QuarryBlockEntity> outputSlotGroup = new SlotGroup<>(inventory, new int[] { 6, 7, 8, 9, 10 });
-	
+	private SlotGroup<QuarryBlockEntity> quarryUpgradesSlotGroup = new SlotGroup<>(quarryUpgradesInventory, new int[] { 0, 1 });
 
 
 	public QuarryBlockEntity() {
@@ -150,7 +161,25 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 			return;
 
 		this.charge(11);
+		refreshUpgrades();
+		tickQuarryLogic();
 
+		currentTickTime++;
+	}
+
+	private void refreshUpgrades() {
+		extenderLevel = 0;
+		fortuneLevel = 0;
+		isSilkTouch = false;
+
+		quarryUpgradesSlotGroup.executeForAll((stack) -> {
+			if (!stack.isEmpty() && stack.getItem() instanceof IQuarryUpgrade) {
+				((IQuarryUpgrade)stack.getItem()).process(this, stack);
+			}
+		});
+	}
+
+	private void tickQuarryLogic() {
 		if (excavationState != ExcavationState.Complete)
 		{
 			if (miningSpentedEnergy < getEnergyPerExcavation()) {
@@ -186,12 +215,10 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 			if (excavationState == ExcavationState.InProgress && currentTickTime % 20 == 0)
 				RecipeCrafter.soundHanlder.playSound(false, this);
 		}
-
-		currentTickTime++;
 	}
 
 	private BlockPos findOrePos() {
-		final int radius = QMConfig.quarrySqrWorkRadius;
+		final int radius = QMConfig.quarrySqrWorkRadius + extenderLevel * QMConfig.quarryExtenderWorkRadius;
 
 		final BlockPos upperBlockPos = pos.add(radius, 0, radius);
 		final BlockPos lowerBlockPos = pos.add(-radius, 0, -radius);
@@ -232,7 +259,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 			return;
 		}
 
-		List<ItemStack> drop = Block.getDroppedStacks(world.getBlockState(blockPos), (ServerWorld)world, pos, world.getBlockEntity(blockPos));
+		List<ItemStack> drop = getDroppedStacks(world.getBlockState(blockPos), blockPos);
 
 		if (outputSlotGroup.hasSpace(drop)) {
 			outputSlotGroup.addStacks(drop);
@@ -296,7 +323,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		}
 
 		if (!getMineAll()) {
-			List<ItemStack> blockDrops = Block.getDroppedStacks(blockState, (ServerWorld)world, blockPos, world.getBlockEntity(blockPos));
+			List<ItemStack> blockDrops = getDroppedStacks(blockState, blockPos);
 			if (blockDrops.size() == 1) {
 				ItemStack blockDrop = blockDrops.get(0);
 				if (holeFillerSlotGroup.hasSpace(blockDrop) && holeFillerFilter(blockDrop)){
@@ -361,6 +388,13 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		return !state.isAir() && (state.getBlock() instanceof BlockDrillTube);
 	}
 
+	private List<ItemStack> getDroppedStacks(BlockState blockState, BlockPos blockPos) {
+		ItemStack item = Items.NETHERITE_PICKAXE.getDefaultStack();
+		item.addEnchantment(Enchantments.FORTUNE, fortuneLevel);
+		item.addEnchantment(Enchantments.SILK_TOUCH, isSilkTouch ? 1 : 0);
+		return Block.getDroppedStacks(blockState, (ServerWorld)world, blockPos, world.getBlockEntity(blockPos), null, item);
+	}
+
 	@Override
 	public double getBaseMaxPower() {
 		return QMConfig.quarryMaxEnergy;
@@ -393,27 +427,39 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 
 	@Override
 	public BuiltScreenHandler createScreenHandler(int syncID, PlayerEntity player) {
-		return new ScreenHandlerBuilder("quarry").player(player.inventory).inventory().hotbar().addInventory()
-				.blockEntity(this)
-				.filterSlot(0, 30, 20, QuarryBlockEntity::holeFillerFilter)
-				.filterSlot(1, 50, 20, QuarryBlockEntity::holeFillerFilter)
-				.filterSlot(2, 70, 20, QuarryBlockEntity::holeFillerFilter)
-				.filterSlot(3, 90, 20, QuarryBlockEntity::holeFillerFilter)
-				.filterSlot(4, 120, 20, QuarryBlockEntity::drillTubeFilter)
-				.filterSlot(5, 140, 20, QuarryBlockEntity::drillTubeFilter)
-				.outputSlot(6, 55, 66)
-				.outputSlot(7, 75, 66)
-				.outputSlot(8, 95, 66)
-				.outputSlot(9, 115, 66)
-				.outputSlot(10, 135, 66)
-				.energySlot(11, 8, 72)
-				.syncEnergyValue()
-				.sync(this::getProgress, this::setProgress)
-				.sync(this::getState, this::setState)
-				.sync(this::getWorkType, this::setWorkType)
-				.sync(this::getMiningAll, this::setMiningAll)
-				.addInventory()
-				.create(this, syncID);
+		ScreenHandlerBuilder screenHandler = new ScreenHandlerBuilder("quarry").player(player.inventory).inventory().hotbar().addInventory()
+			.blockEntity(this)
+			.filterSlot(0, 30, 20, QuarryBlockEntity::holeFillerFilter)
+			.filterSlot(1, 50, 20, QuarryBlockEntity::holeFillerFilter)
+			.filterSlot(2, 70, 20, QuarryBlockEntity::holeFillerFilter)
+			.filterSlot(3, 90, 20, QuarryBlockEntity::holeFillerFilter)
+			.filterSlot(4, 120, 20, QuarryBlockEntity::drillTubeFilter)
+			.filterSlot(5, 140, 20, QuarryBlockEntity::drillTubeFilter)
+			.outputSlot(6, 55, 66)
+			.outputSlot(7, 75, 66)
+			.outputSlot(8, 95, 66)
+			.outputSlot(9, 115, 66)
+			.outputSlot(10, 135, 66)
+			.energySlot(11, 8, 72)
+			.syncEnergyValue()
+			.sync(this::getProgress, this::setProgress)
+			.sync(this::getState, this::setState)
+			.sync(this::getWorkType, this::setWorkType)
+			.sync(this::getMiningAll, this::setMiningAll)
+			.addInventory();
+
+		try {
+			Field slotsField = ScreenHandlerBuilder.class.getDeclaredField("slots");
+			slotsField.setAccessible(true);
+			List<Slot> slots = (List<Slot>)slotsField.get(screenHandler);
+			slots.add(new BaseSlot(quarryUpgradesInventory, 0, 180, 20, QuarryBlockEntity::quarryUpgradesFilter));
+			slots.add(new BaseSlot(quarryUpgradesInventory, 1, 180, 38, QuarryBlockEntity::quarryUpgradesFilter));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		return screenHandler.create(this, syncID);
 	}
 
 	@Override
@@ -424,6 +470,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		setWorkType(data.getInt("workType"));
 		setProgress(data.getDouble("progress"));
 		setMiningAll(data.getInt("mineAll"));
+		quarryUpgradesInventory.read(tag, "quarryUpgradesInventory");
 	}
 
 	@Override
@@ -435,6 +482,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		data.putDouble("progress", getProgress());
 		data.putInt("mineAll", getMiningAll());
 		tag.put("Quarry", data);
+		quarryUpgradesInventory.write(tag, "quarryUpgradesInventory");
 		return tag;
 	}
 
@@ -488,6 +536,10 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		}
 		return false;
 	}
+
+	private static boolean quarryUpgradesFilter(ItemStack stack) {
+		return stack.getItem() instanceof IQuarryUpgrade;
+	} 
 
 	public enum ExcavationState {
 		InProgress,

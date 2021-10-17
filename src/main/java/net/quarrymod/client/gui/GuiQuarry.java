@@ -48,6 +48,11 @@ public class GuiQuarry extends GuiBase<BuiltScreenHandler> {
 
 		drawSlot(matrixStack, 120, 20, layer);
 		drawSlot(matrixStack, 140, 20, layer);
+
+		builder.drawDefaultBackground(matrixStack, this, getGuiLeft() + 175, getGuiTop() + 15, 27, 45);
+		drawSlot(matrixStack, 180, 20, layer);
+		drawSlot(matrixStack, 180, 38, layer);
+
 		drawOutputSlotBar(matrixStack, 54, 65, 5, layer);
 	}
 

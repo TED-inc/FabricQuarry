@@ -1,6 +1,13 @@
 {
     "block.quarrymod.quarry": "Карьер",
     "block.quarrymod.drill_tube": "Карьерная труба",
+    "item.quarrymod.fortune_lvl1_upgrade": "Улучшене «Удача I»",
+    "item.quarrymod.fortune_lvl2_upgrade": "Улучшене «Удача II»",
+    "item.quarrymod.fortune_lvl3_upgrade": "Улучшене «Удача III»",
+    "item.quarrymod.range_extender_lvl1_upgrade": "Улучшене «Расширитель I»",
+    "item.quarrymod.range_extender_lvl2_upgrade": "Улучшене «Расширитель II»",
+    "item.quarrymod.range_extender_lvl3_upgrade": "Улучшене «Расширитель III»",
+    "item.quarrymod.silktouch_upgrade": "Улучшене «Шёлковое касание»",
     "gui.quarrymod.quarry.filler_blocks": "Блоки заполнения",
     "gui.quarrymod.quarry.drill_tubes": "Карьерные трубы",
     "gui.quarrymod.quarry.mine_all": "Всё",

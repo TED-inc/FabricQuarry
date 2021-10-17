@@ -1,6 +1,13 @@
 {
     "block.quarrymod.quarry": "Quarry",
     "block.quarrymod.drill_tube": "Quarry Tube",
+    "item.quarrymod.fortune_lvl1_upgrade": "Fortune Upgrade Lvl1",
+    "item.quarrymod.fortune_lvl2_upgrade": "Fortune Upgrade Lvl2",
+    "item.quarrymod.fortune_lvl3_upgrade": "Fortune Upgrade Lvl3",
+    "item.quarrymod.range_extender_lvl1_upgrade": "Range Extender Upgrade Lvl1",
+    "item.quarrymod.range_extender_lvl2_upgrade": "Range Extender Upgrade Lvl2",
+    "item.quarrymod.range_extender_lvl3_upgrade": "Range Extender Upgrade Lvl3",
+    "item.quarrymod.silktouch_upgrade": "Silktouch Upgrade",
     "gui.quarrymod.quarry.filler_blocks": "Filler Blocks",
     "gui.quarrymod.quarry.drill_tubes": "Quarry Tubes",
     "gui.quarrymod.quarry.mine_all": "Mine All",
