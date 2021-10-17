@@ -179,7 +179,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 					if (excavationState == ExcavationState.NoOresInCurrentDepth || excavationState == ExcavationState.NotEnoughDrillTube)
 						tryDrillDownTube();
 					else if (targetOrePos != null && (excavationState == ExcavationState.InProgress || excavationState == ExcavationState.CannotOutputMineDrop))
-						tryMine(targetOrePos);
+						tryMine(targetOrePos, !getMineAll());
 				}
 
 				if (excavationState == ExcavationState.InProgress)
@@ -227,7 +227,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		return null;
 	}
 
-	private void tryMine(BlockPos blockPos) {
+	private void tryMine(BlockPos blockPos, boolean fillHole) {
 		if (!isOre(blockPos))
 		{
 			setExcavationState(ExcavationState.NoOreInCurrentPos);
@@ -240,6 +240,13 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		if (outputSlotGroup.hasSpace(drop)) {
 			outputSlotGroup.addStacks(drop);
 			world.removeBlock(blockPos, false);
+			if (fillHole) {
+				ItemStack blockToPlace = holeFillerSlotGroup.consumeAny(1, QuarryBlockEntity::holeFillerFilter);
+				if (!blockToPlace.isEmpty() && blockToPlace.getItem() instanceof BlockItem) {
+					world.setBlockState(blockPos, ((BlockItem)blockToPlace.getItem()).getBlock().getDefaultState());
+				}
+			}
+			
 			targetOrePos = null;
 			setExcavationState(ExcavationState.InProgress);
 		}	
@@ -287,9 +294,21 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		}
 
 		if (isOre(blockPos)) {
-			tryMine(blockPos);
+			tryMine(blockPos, false);
 			return;
 		}
+
+		if (!getMineAll()) {
+			List<ItemStack> blockDrops = Block.getDroppedStacks(blockState, (ServerWorld)world, blockPos, world.getBlockEntity(blockPos));
+			if (blockDrops.size() == 1) {
+				ItemStack blockDrop = blockDrops.get(0);
+				if (holeFillerSlotGroup.hasSpace(blockDrop) && holeFillerFilter(blockDrop)){
+					holeFillerSlotGroup.addStack(blockDrop);
+				}
+			}
+			
+		}
+			
 
 		drillTubeSlotGroup.consume(drillTubeItem);
 		setExcavationState(ExcavationState.InProgress);
