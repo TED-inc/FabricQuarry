@@ -2,6 +2,7 @@ package net.quarrymod.blockentity.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import net.minecraft.item.ItemStack;
 import reborncore.common.blockentity.MachineBaseBlockEntity;
@@ -95,6 +96,24 @@ public final class SlotGroup<T extends MachineBaseBlockEntity> {
 
 	public boolean canConsume(ItemStack stack) {
 		return getConsumeSlot(stack) != null;
+	}
+
+	// TODO: make it possible to grab from multiple slots
+	public ItemStack consumeAny(int count, Predicate<ItemStack> filter) {
+		for (int slotId : slotList)
+		{
+			ItemStack slotStack = inventory.getStack(slotId);
+			if (!slotStack.isEmpty()
+			&& slotStack.getCount() >= count
+			&& filter.test(slotStack)) {
+				ItemStack consumeStack = slotStack.copy();
+				consumeStack.setCount(count);
+				consume(consumeStack);
+				return consumeStack;
+			}
+		}
+
+		return ItemStack.EMPTY;
 	}
 
 	// TODO: make it possible to grab from multiple slots
