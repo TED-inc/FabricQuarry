@@ -2,6 +2,7 @@ package net.quarrymod.blockentity.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import net.minecraft.item.ItemStack;
@@ -96,6 +97,11 @@ public final class SlotGroup<T extends MachineBaseBlockEntity> {
 
 	public boolean canConsume(ItemStack stack) {
 		return getConsumeSlot(stack) != null;
+	}
+
+	public void executeForAll(Consumer<ItemStack> func) {
+		for (int slotId : slotList)
+			func.accept(inventory.getStack(slotId));
 	}
 
 	// TODO: make it possible to grab from multiple slots

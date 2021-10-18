@@ -1,0 +1,25 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+      "SCS",
+      "CMC",
+      "SIS"
+    ],
+    "key": {
+      "C": {
+        "item": "techreborn:advanced_circuit"
+      },
+      "S": {
+        "tag": "c:silicon_plates"
+      },
+      "M": {
+        "item": "techreborn:compressor"
+      },
+      "I": {
+        "tag": "c:iridium_ingots"
+      }
+    },
+    "result": {
+      "item": "quarrymod:silktouch_upgrade"
+    }
+  }

@@ -1,0 +1,22 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+      "CPP",
+      "PAP",
+      "PPC"
+    ],
+    "key": {
+      "C": {
+        "item": "techreborn:electronic_circuit"
+      },
+      "A": {
+        "item": "techreborn:advanced_alloy_plate"
+      },
+      "P": {
+        "item": "quarrymod:drill_tube"
+      }
+    },
+    "result": {
+      "item": "quarrymod:range_extender_lvl1_upgrade"
+    }
+  }

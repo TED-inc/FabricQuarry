@@ -1,0 +1,25 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+      " SR",
+      "CTC",
+      "RS "
+    ],
+    "key": {
+      "C": {
+        "item": "techreborn:advanced_circuit"
+      },
+      "T": {
+        "tag": "c:titanium_plates"
+      },
+      "S": {
+        "tag": "c:steel_plates"
+      },
+      "R": {
+        "item": "quarrymod:range_extender_lvl1_upgrade"
+      }
+    },
+    "result": {
+      "item": "quarrymod:range_extender_lvl2_upgrade"
+    }
+  }

@@ -25,8 +25,12 @@ public class QMConfig {
     @Config(config = "machines", category = "quarry", key = "QuarryMinTiksPerExcavation", comment = "Quarry Min Tiks Per Excavation (with all 4 upgrdes), 20 ticks - 1 second")
 	public static int quarryMinTiksPerExcavation = 8;
 
-    @Config(config = "machines", category = "quarry", key = "QuarrySqrWorkRadius", comment = "Quarry Sqr Work Radius, square radius of work, in blocks")
+    @Deprecated
+    @Config(config = "machines", category = "quarry", key = "QuarrySqrWorkRadius", comment = "Do not affect anything anymore")
 	public static int quarrySqrWorkRadius = 8;
+
+    @Config(config = "machines", category = "quarry", key = "QuarryExtenderWorkRadius", comment = "Quarry Extender Work Radius, added radius to SqrWorkRadius for each level, in blocks")
+	public static List<Double> quarrySqrWorkRadiusByUpgradeLevel = Arrays.asList(7.0, 12.0, 18.0, 24.0);
 
     @Config(config = "machines", category = "quarry", key = "QuarryAccessibleExcavationModes", comment = "Quarry Accessible Excavation Modes, 1 - ores only, 2 - all only, 3 - all and ores")
 	public static int quarryAccessibleExcavationModes = 3;
