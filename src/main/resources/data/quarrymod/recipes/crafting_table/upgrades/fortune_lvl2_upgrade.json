@@ -1,0 +1,25 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+      "ULU",
+      "CPC",
+      " U "
+    ],
+    "key": {
+      "C": {
+        "item": "techreborn:advanced_circuit"
+      },
+      "L": {
+        "tag": "c:lapis_plates"
+      },
+      "P": {
+        "item": "techreborn:peridot_storage_block"
+      },
+      "U": {
+        "item": "quarrymod:fortune_lvl1_upgrade"
+      }
+    },
+    "result": {
+      "item": "quarrymod:fortune_lvl2_upgrade"
+    }
+  }

@@ -9,6 +9,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -56,15 +57,15 @@ public class QuarryBlock extends GenericMachineBlock {
 			return name;
 		}
 
-        public int getColor() {
+        public Formatting getFormating() {
             switch (this)
             {
                 case ExtractTube:
-                return 0x909090;
+                return Formatting.GREEN;
                 case Complete:
-                return 0x003090;
+                return Formatting.AQUA;
                 default:
-                return 0xB00000;
+                return Formatting.RED;
             }
         }
 	}

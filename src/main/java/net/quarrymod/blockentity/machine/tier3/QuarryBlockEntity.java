@@ -42,7 +42,7 @@ import reborncore.common.util.RebornInventory;
 import team.reborn.energy.EnergySide;
 
 public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements IToolDrop, InventoryProvider, BuiltScreenHandlerProvider {
-	public int extenderLevel;
+	public int rangeExtenderLevel;
 	public int fortuneLevel;
 	public boolean isSilkTouch;
 
@@ -168,7 +168,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	}
 
 	private void refreshUpgrades() {
-		extenderLevel = 0;
+		rangeExtenderLevel = 0;
 		fortuneLevel = 0;
 		isSilkTouch = false;
 
@@ -218,7 +218,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	}
 
 	private BlockPos findOrePos() {
-		final int radius = QMConfig.quarrySqrWorkRadius + extenderLevel * QMConfig.quarryExtenderWorkRadius;
+		final int radius = (int)Math.round(QMConfig.quarrySqrWorkRadiusByUpgradeLevel.get(rangeExtenderLevel));
 
 		final BlockPos upperBlockPos = pos.add(radius, 0, radius);
 		final BlockPos lowerBlockPos = pos.add(-radius, 0, -radius);
@@ -430,11 +430,11 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		ScreenHandlerBuilder screenHandler = new ScreenHandlerBuilder("quarry").player(player.inventory).inventory().hotbar().addInventory()
 			.blockEntity(this)
 			.filterSlot(0, 30, 20, QuarryBlockEntity::holeFillerFilter)
-			.filterSlot(1, 50, 20, QuarryBlockEntity::holeFillerFilter)
-			.filterSlot(2, 70, 20, QuarryBlockEntity::holeFillerFilter)
-			.filterSlot(3, 90, 20, QuarryBlockEntity::holeFillerFilter)
-			.filterSlot(4, 120, 20, QuarryBlockEntity::drillTubeFilter)
-			.filterSlot(5, 140, 20, QuarryBlockEntity::drillTubeFilter)
+			.filterSlot(1, 48, 20, QuarryBlockEntity::holeFillerFilter)
+			.filterSlot(2, 66, 20, QuarryBlockEntity::holeFillerFilter)
+			.filterSlot(3, 84, 20, QuarryBlockEntity::holeFillerFilter)
+			.filterSlot(4, 121, 20, QuarryBlockEntity::drillTubeFilter)
+			.filterSlot(5, 139, 20, QuarryBlockEntity::drillTubeFilter)
 			.outputSlot(6, 55, 66)
 			.outputSlot(7, 75, 66)
 			.outputSlot(8, 95, 66)
@@ -452,8 +452,8 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 			Field slotsField = ScreenHandlerBuilder.class.getDeclaredField("slots");
 			slotsField.setAccessible(true);
 			List<Slot> slots = (List<Slot>)slotsField.get(screenHandler);
-			slots.add(new BaseSlot(quarryUpgradesInventory, 0, 180, 20, QuarryBlockEntity::quarryUpgradesFilter));
-			slots.add(new BaseSlot(quarryUpgradesInventory, 1, 180, 38, QuarryBlockEntity::quarryUpgradesFilter));
+			slots.add(new BaseSlot(quarryUpgradesInventory, 0, -42, 30, QuarryBlockEntity::quarryUpgradesFilter));
+			slots.add(new BaseSlot(quarryUpgradesInventory, 1, -42, 48, QuarryBlockEntity::quarryUpgradesFilter));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

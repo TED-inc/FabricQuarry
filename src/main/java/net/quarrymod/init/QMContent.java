@@ -46,13 +46,13 @@ public class QMContent {
 
 	public enum Upgrades implements ItemConvertible {
 		RANGE_EXTENDER_LVL1((quarryBlockEntity, stack) -> {
-			quarryBlockEntity.extenderLevel = Math.max(quarryBlockEntity.extenderLevel, 1);
+			quarryBlockEntity.rangeExtenderLevel = Math.max(quarryBlockEntity.rangeExtenderLevel, 1);
 		}),
 		RANGE_EXTENDER_LVL2((quarryBlockEntity, stack) -> {
-			quarryBlockEntity.extenderLevel = Math.max(quarryBlockEntity.extenderLevel, 2);
+			quarryBlockEntity.rangeExtenderLevel = Math.max(quarryBlockEntity.rangeExtenderLevel, 2);
 		}),
 		RANGE_EXTENDER_LVL3((quarryBlockEntity, stack) -> {
-			quarryBlockEntity.extenderLevel = Math.max(quarryBlockEntity.extenderLevel, 3);
+			quarryBlockEntity.rangeExtenderLevel = Math.max(quarryBlockEntity.rangeExtenderLevel, 3);
 		}),
 		FORTUNE_LVL1((quarryBlockEntity, stack) -> {
 			quarryBlockEntity.fortuneLevel = Math.max(quarryBlockEntity.fortuneLevel, 1);

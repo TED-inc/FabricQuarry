@@ -1,0 +1,25 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+      "PLP",
+      "CEC",
+      " P "
+    ],
+    "key": {
+      "C": {
+        "item": "techreborn:electronic_circuit"
+      },
+      "E": {
+        "item": "techreborn:extractor"
+      },
+      "L": {
+        "tag": "c:lazurite_plates"
+      },
+      "P": {
+        "item": "techreborn:peridot_plate"
+      }
+    },
+    "result": {
+      "item": "quarrymod:fortune_lvl1_upgrade"
+    }
+  }
