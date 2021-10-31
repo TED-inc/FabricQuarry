@@ -14,6 +14,8 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import reborncore.common.util.ItemHandlerUtils;
+
 import techreborn.blocks.GenericMachineBlock;
 
 public class QuarryBlock extends GenericMachineBlock {
@@ -37,6 +39,14 @@ public class QuarryBlock extends GenericMachineBlock {
 	public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
 		super.onPlaced(world, pos, state, placer, stack);
         ((QuarryBlockEntity) world.getBlockEntity(pos)).resetOnPlaced();
+	}
+
+    @Override
+	public void onStateReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+		if (state.getBlock() != newState.getBlock()) {
+            ItemHandlerUtils.dropItemHandler(worldIn, pos, ((QuarryBlockEntity) worldIn.getBlockEntity(pos)).quarryUpgradesInventory);
+			super.onStateReplaced(state, worldIn, pos, newState, isMoving);
+		}
 	}
 
     public enum DisplayState implements StringIdentifiable {

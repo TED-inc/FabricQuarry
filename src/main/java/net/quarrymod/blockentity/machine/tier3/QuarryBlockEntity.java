@@ -50,7 +50,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	public boolean isSilkTouch;
 
 	public RebornInventory<QuarryBlockEntity> inventory = new RebornInventory<>(12, "QuarryBlockEntity", 64, this);
-	private RebornInventory<QuarryBlockEntity> quarryUpgradesInventory = new RebornInventory<>(2, "QuarryUpgrades", 1, this);
+	public RebornInventory<QuarryBlockEntity> quarryUpgradesInventory = new RebornInventory<>(2, "QuarryUpgrades", 1, this);
 	
 	private long miningSpentedEnergy = 0;
 	private ExcavationState excavationState = ExcavationState.InProgress;
@@ -267,18 +267,19 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		if (outputSlotGroup.hasSpace(drop)) {
 			outputSlotGroup.addStacks(drop);
 			world.removeBlock(blockPos, false);
-			if (fillHole) {
-				ItemStack blockToPlace = holeFillerSlotGroup.consumeAny(1, QuarryBlockEntity::holeFillerFilter);
-				if (!blockToPlace.isEmpty() && blockToPlace.getItem() instanceof BlockItem) {
-					world.setBlockState(blockPos, ((BlockItem)blockToPlace.getItem()).getBlock().getDefaultState());
-				}
-			}
-			
+			if (fillHole)
+				tryFillHole(blockPos);
 			targetOrePos = null;
 			setExcavationState(ExcavationState.InProgress);
 		}	
 		else
 			setExcavationState(ExcavationState.CannotOutputMineDrop);
+	}
+
+	private void tryFillHole(BlockPos blockPos) {
+		ItemStack blockToPlace = holeFillerSlotGroup.consumeAny(1, QuarryBlockEntity::holeFillerFilter);
+		if (!blockToPlace.isEmpty() && blockToPlace.getItem() instanceof BlockItem)
+			world.setBlockState(blockPos, ((BlockItem)blockToPlace.getItem()).getBlock().getDefaultState());
 	}
 
 	private int getDrillTubeDepth() {
@@ -357,6 +358,8 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		{
 			BlockPos blockPos = new BlockPos(pos.getX(), tubeDepth, pos.getZ());
 			world.removeBlock(blockPos, false);
+			if (!getMineAll())
+				tryFillHole(blockPos);
 			drillTubeSlotGroup.addStack(tubeItem);
 		}
 		else
