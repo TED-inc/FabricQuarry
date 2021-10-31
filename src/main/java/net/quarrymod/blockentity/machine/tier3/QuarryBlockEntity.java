@@ -47,7 +47,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	public boolean isSilkTouch;
 
 	public RebornInventory<QuarryBlockEntity> inventory = new RebornInventory<>(12, "QuarryBlockEntity", 64, this);
-	private RebornInventory<QuarryBlockEntity> quarryUpgradesInventory = new RebornInventory<>(2, "QuarryUpgrades", 1, this);
+	public RebornInventory<QuarryBlockEntity> quarryUpgradesInventory = new RebornInventory<>(2, "QuarryUpgrades", 1, this);
 	
 	private double miningSpentedEnergy = 0;
 	private ExcavationState excavationState = ExcavationState.InProgress;
