@@ -2,13 +2,10 @@ package net.quarrymod.init;
 
 import net.quarrymod.block.QuarryBlock;
 import net.quarrymod.block.misc.BlockDrillTube;
-import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
 import net.quarrymod.items.IQuarryUpgrade;
 import net.quarrymod.items.QuarryUpgradeItem;
-import reborncore.api.blockentity.IUpgrade;
 
 import java.util.Locale;
-import java.util.function.Consumer;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -79,6 +76,15 @@ public class QMContent {
 		@Override
 		public Item asItem() {
 			return item;
+		}
+
+		public static Upgrades getFrom(QuarryUpgradeItem item) {
+			for (Upgrades upgrade : values()) {
+				if (upgrade.item == item)
+					return upgrade;
+			} 
+
+			throw null;
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package net.quarrymod;
 
+import net.quarrymod.events.StackToolTipHandler;
 import net.quarrymod.init.QMContent;
 import net.quarrymod.init.QMContent.Machine;
 import net.quarrymod.init.QMContent.Upgrades;
@@ -31,5 +32,8 @@ public class RegistryManager {
     }
 
     @SuppressWarnings("MethodCallSideOnly")
-    public static void ClientInit() { }
+    public static void ClientInit() 
+    { 
+      StackToolTipHandler.setup();
+    }
 }
