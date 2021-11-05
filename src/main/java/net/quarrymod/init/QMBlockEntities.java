@@ -42,4 +42,9 @@ public class QMBlockEntities {
 		QMBlockEntities.TYPES.add(blockEntityType);
 		return blockEntityType;
 	}
+
+	public static void init() {
+		//Force loads the block entities at the right time
+		TYPES.toString();
+	}
 }

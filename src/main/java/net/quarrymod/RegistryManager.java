@@ -1,6 +1,7 @@
 package net.quarrymod;
 
 import net.quarrymod.events.StackToolTipHandler;
+import net.quarrymod.init.QMBlockEntities;
 import net.quarrymod.init.QMContent;
 import net.quarrymod.init.QMContent.Machine;
 import net.quarrymod.init.QMContent.Upgrades;
@@ -29,6 +30,8 @@ public class RegistryManager {
       Arrays.stream(Upgrades.values()).forEach(value -> RebornRegistry.registerItem(
 			  value.item, 
 			  new Identifier(QuarryMod.MOD_ID, value.name)));
+
+      QMBlockEntities.init();
     }
 
     @SuppressWarnings("MethodCallSideOnly")
