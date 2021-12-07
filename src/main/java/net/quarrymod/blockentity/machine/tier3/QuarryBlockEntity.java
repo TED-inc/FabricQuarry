@@ -124,7 +124,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	}
 
 	private void refreshProperty() {
-		if (world != null)
+		if (world != null && !world.isClient)
 			((QuarryBlock)world.getBlockState(pos).getBlock()).setState(getDisplayState(), world, pos);
 	}
 
@@ -480,7 +480,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound tag) {
+	public void writeNbt(NbtCompound tag) {
 		super.writeNbt(tag);
 		NbtCompound data = new NbtCompound();
 		data.putInt("state", getState());
@@ -489,7 +489,6 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		data.putInt("mineAll", getMiningAll());
 		tag.put("Quarry", data);
 		quarryUpgradesInventory.write(tag, "quarryUpgradesInventory");
-		return tag;
 	}
 
 	private long getProgress() {

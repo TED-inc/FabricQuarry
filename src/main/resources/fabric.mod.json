@@ -31,11 +31,11 @@
   ],
 
   "depends": {
-    "fabricloader": ">=0.11.3",
+    "fabricloader": ">=0.12.0",
     "fabric": "*",
-    "minecraft": "1.17.x",
-    "java": ">=16",
-    "techreborn": ">=5.0.8-beta"
+    "minecraft": "1.18.x",
+    "java": ">=17",
+    "techreborn": ">=5.1.0-beta"
   },
   "suggests": {
     "another-mod": "*"
