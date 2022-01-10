@@ -6,6 +6,8 @@ import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
 import net.quarrymod.config.QMConfig;
 import net.quarrymod.packets.QMServerboundPackets;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,8 +35,8 @@ public class GuiQuarry extends GuiBase<BuiltScreenHandler> {
 	@Override
 	public void init() {
 		super.init();
-		mineAllButton = addButton(new GuiButtonExtended(x + 29, y + 39, 54, 20, new TranslatableText("gui.quarrymod.quarry.mine_all"), (ButtonWidget buttonWidget) -> changeMineAll(false)));
-		mineOresButton = addButton(new GuiButtonExtended(x + 29, y + 39, 54, 20, new TranslatableText("gui.quarrymod.quarry.mine_ores"), (ButtonWidget buttonWidget) -> changeMineAll(true)));
+		mineAllButton = addDrawableChild(new GuiButtonExtended(x + 29, y + 39, 54, 20, new TranslatableText("gui.quarrymod.quarry.mine_all"), (ButtonWidget buttonWidget) -> changeMineAll(false)));
+		mineOresButton = addDrawableChild(new GuiButtonExtended(x + 29, y + 39, 54, 20, new TranslatableText("gui.quarrymod.quarry.mine_ores"), (ButtonWidget buttonWidget) -> changeMineAll(true)));
 		mineAllButton.visible = false;
 		mineOresButton.visible = false;
 	}
@@ -55,7 +57,7 @@ public class GuiQuarry extends GuiBase<BuiltScreenHandler> {
 		drawSlot(matrixStack, 139, 20, layer);
 
 		// upgrades
-		getMinecraft().getTextureManager().bindTexture(defaultTextureSheet);
+		RenderSystem.setShaderTexture(0, defaultTextureSheet);
 		drawTexture(matrixStack, x - 48, y + 24, 0, 0, 27, 46);
 
 		drawOutputSlotBar(matrixStack, 54, 65, 5, layer);
@@ -72,7 +74,7 @@ public class GuiQuarry extends GuiBase<BuiltScreenHandler> {
 		
 
 		if (displayState != DisplayState.Off && displayState != DisplayState.Mining) {
-			getMinecraft().getTextureManager().bindTexture(defaultTextureSheet);
+			RenderSystem.setShaderTexture(0, defaultTextureSheet);
 			if (displayState == DisplayState.Error)
 				drawTexture(matrixStack, 86, 42, 28, 0, 15, 16);
 			else

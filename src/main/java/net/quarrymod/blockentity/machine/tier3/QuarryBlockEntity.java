@@ -12,6 +12,8 @@ import net.quarrymod.items.IQuarryUpgrade;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidBlock;
@@ -22,12 +24,14 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
 
 import reborncore.api.IToolDrop;
 import reborncore.api.blockentity.InventoryProvider;
@@ -35,11 +39,10 @@ import reborncore.client.gui.slots.BaseSlot;
 import reborncore.client.screen.BuiltScreenHandlerProvider;
 import reborncore.client.screen.builder.BuiltScreenHandler;
 import reborncore.client.screen.builder.ScreenHandlerBuilder;
+import reborncore.common.blockentity.MachineBaseBlockEntity;
 import reborncore.common.powerSystem.PowerAcceptorBlockEntity;
 import reborncore.common.recipes.RecipeCrafter;
 import reborncore.common.util.RebornInventory;
-
-import team.reborn.energy.EnergySide;
 
 public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements IToolDrop, InventoryProvider, BuiltScreenHandlerProvider {
 	public int rangeExtenderLevel;
@@ -49,7 +52,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	public RebornInventory<QuarryBlockEntity> inventory = new RebornInventory<>(12, "QuarryBlockEntity", 64, this);
 	public RebornInventory<QuarryBlockEntity> quarryUpgradesInventory = new RebornInventory<>(2, "QuarryUpgrades", 1, this);
 	
-	private double miningSpentedEnergy = 0;
+	private long miningSpentedEnergy = 0;
 	private ExcavationState excavationState = ExcavationState.InProgress;
 	private ExcavationWorkType excavationWorkType = ExcavationWorkType.Mining;
 	private boolean isMineAll = false;
@@ -63,8 +66,8 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	private SlotGroup<QuarryBlockEntity> quarryUpgradesSlotGroup = new SlotGroup<>(quarryUpgradesInventory, new int[] { 0, 1 });
 
 
-	public QuarryBlockEntity() {
-		super(QMBlockEntities.QUARRY);
+	public QuarryBlockEntity(BlockPos pos, BlockState state) {
+		super(QMBlockEntities.QUARRY, pos, state);
 	}
 
 	public int getProgressScaled(int scale) {
@@ -150,12 +153,12 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	public void resetOnPlaced() {
 		setExcavationState(ExcavationState.InProgress);
 		setExcavationWorkType(ExcavationWorkType.Mining);
-		setProgress(0d);
+		setProgress(0);
 	}
 
 	@Override
-	public void tick() {
-		super.tick();
+	public void tick(World world, BlockPos pos, BlockState state, MachineBaseBlockEntity blockEntity2) {
+		super.tick(world, pos, state, blockEntity2);
 
 		if (world.isClient)
 			return;
@@ -183,8 +186,8 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		if (excavationState != ExcavationState.Complete)
 		{
 			if (miningSpentedEnergy < getEnergyPerExcavation()) {
-				final double euNeeded = getEnergyPerExcavation() / getTiksPerExcavation();
-				final double euAvailable = Math.min(euNeeded, getStored(EnergySide.UNKNOWN));
+				final long euNeeded = getEnergyPerExcavation() / getTiksPerExcavation();
+				final long euAvailable = Math.min(euNeeded, getStored());
 				if (euAvailable > 0d) {
 					useEnergy(euAvailable);
 					miningSpentedEnergy += euAvailable;
@@ -282,19 +285,19 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	private int getDrillTubeDepth() {
 		boolean hasTubes = false;
 
-		for (int y = pos.getY() - 1; y >= 0 ; y--)
+		for (int y = pos.getY() - 1; y >= world.getBottomY() ; y--)
 			if (!isDrillTube(world.getBlockState(new BlockPos(pos.getX(), y, pos.getZ()))))
 				return y + 1;
 			else
 				hasTubes = true;
 
-		return hasTubes ? 0 : pos.getY();
+		return hasTubes ? world.getBottomY() : pos.getY();
 	}
 
 	private void tryDrillDownTube() {
 		int newDepth = getDrillTubeDepth() - 1;
 
-		if (newDepth < 0)
+		if (newDepth < world.getBottomY())
 		{
 			setExcavationWorkType(ExcavationWorkType.ExtractTube);
 			setExcavationState(ExcavationState.InProgress);
@@ -367,8 +370,8 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 		return Math.max((int) (QMConfig.quarryTiksPerExcavation * (1d - getSpeedMultiplier())), QMConfig.quarryMinTiksPerExcavation);
 	}
 
-	private double getEnergyPerExcavation() {
-		return QMConfig.quarryEnergyPerExcavation * getPowerMultiplier();
+	private long getEnergyPerExcavation() {
+		return (long)(QMConfig.quarryEnergyPerExcavation * getPowerMultiplier());
 	}
 
 	private boolean isOre(BlockPos blockPos) {
@@ -399,23 +402,23 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	}
 
 	@Override
-	public double getBaseMaxPower() {
+	public long getBaseMaxPower() {
 		return QMConfig.quarryMaxEnergy;
 	}
 
 	@Override
-	public boolean canProvideEnergy(EnergySide side) {
+	public boolean canProvideEnergy(@Nullable Direction side) {
 		return false;
 	}
 
 	@Override
-	public double getBaseMaxOutput() {
+	public long getBaseMaxOutput() {
 		return 0;
 	}
 
 	@Override
-	public double getBaseMaxInput() {
-		return QMConfig.quarryMaxInput * (1d + getSpeedMultiplier() * QMConfig.quarryMaxInputOverclockerMultipier);
+	public long getBaseMaxInput() {
+		return (long)(QMConfig.quarryMaxInput * (1d + getSpeedMultiplier() * QMConfig.quarryMaxInputOverclockerMultipier));
 	}
 
 	@Override
@@ -430,7 +433,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 
 	@Override
 	public BuiltScreenHandler createScreenHandler(int syncID, PlayerEntity player) {
-		ScreenHandlerBuilder screenHandler = new ScreenHandlerBuilder("quarry").player(player.inventory).inventory().hotbar().addInventory()
+		ScreenHandlerBuilder screenHandler = new ScreenHandlerBuilder("quarry").player(player.getInventory()).inventory().hotbar().addInventory()
 			.blockEntity(this)
 			.filterSlot(0, 30, 20, QuarryBlockEntity::holeFillerFilter)
 			.filterSlot(1, 48, 20, QuarryBlockEntity::holeFillerFilter)
@@ -466,34 +469,34 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 	}
 
 	@Override
-	public void fromTag(BlockState blockState, CompoundTag tag) {
-		super.fromTag(blockState, tag);
-		CompoundTag data = tag.getCompound("Quarry");
+	public void readNbt(NbtCompound tag) {
+		super.readNbt(tag);
+		NbtCompound data = tag.getCompound("Quarry");
 		setState(data.getInt("state"));
 		setWorkType(data.getInt("workType"));
-		setProgress(data.getDouble("progress"));
+		setProgress(data.getLong("progress"));
 		setMiningAll(data.getInt("mineAll"));
 		quarryUpgradesInventory.read(tag, "quarryUpgradesInventory");
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
-		CompoundTag data = new CompoundTag();
+	public NbtCompound writeNbt(NbtCompound tag) {
+		super.writeNbt(tag);
+		NbtCompound data = new NbtCompound();
 		data.putInt("state", getState());
 		data.putInt("workType", getWorkType());
-		data.putDouble("progress", getProgress());
+		data.putLong("progress", getProgress());
 		data.putInt("mineAll", getMiningAll());
 		tag.put("Quarry", data);
 		quarryUpgradesInventory.write(tag, "quarryUpgradesInventory");
 		return tag;
 	}
 
-	private double getProgress() {
+	private long getProgress() {
 		return miningSpentedEnergy;
 	}
 
-	private void setProgress(double progress) {
+	private void setProgress(long progress) {
 		miningSpentedEnergy = progress;
 	}
 

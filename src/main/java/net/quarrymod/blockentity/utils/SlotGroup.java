@@ -79,7 +79,7 @@ public final class SlotGroup<T extends MachineBaseBlockEntity> {
 				}
 			}
 		}
-		inventory.setChanged();
+		inventory.setHashChanged();
 	}
 
 	public boolean isEmpty() {
