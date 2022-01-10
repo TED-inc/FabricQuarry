@@ -44,7 +44,9 @@ public class QuarryBlock extends GenericMachineBlock {
     @Override
 	public void onStateReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
 		if (state.getBlock() != newState.getBlock()) {
-            ItemHandlerUtils.dropItemHandler(worldIn, pos, ((QuarryBlockEntity) worldIn.getBlockEntity(pos)).quarryUpgradesInventory);
+			QuarryBlockEntity quarryBlockEntity = ((QuarryBlockEntity) worldIn.getBlockEntity(pos));
+			if (quarryBlockEntity != null)
+            	ItemHandlerUtils.dropItemHandler(worldIn, pos, quarryBlockEntity.quarryUpgradesInventory);
 			super.onStateReplaced(state, worldIn, pos, newState, isMoving);
 		}
 	}
