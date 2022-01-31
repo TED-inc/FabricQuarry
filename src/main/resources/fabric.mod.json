@@ -35,7 +35,7 @@
     "fabric": "*",
     "minecraft": "1.18.x",
     "java": ">=17",
-    "techreborn": ">=5.1.0-beta"
+    "techreborn": ">=5.1.0-beta.7"
   },
   "suggests": {
     "another-mod": "*"
