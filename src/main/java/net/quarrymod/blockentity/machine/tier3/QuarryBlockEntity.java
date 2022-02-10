@@ -213,8 +213,9 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 			}
 
 			if (excavationState == ExcavationState.InProgress && currentTickTime % 20 == 0)
-				RecipeCrafter.soundHandler.playSound(false, this);
-		}
+				if (RecipeCrafter.soundHanlder != null) {
+					RecipeCrafter.soundHanlder.playSound(false, this);
+				}
 	}
 
 	private BlockPos findOrePos() {
