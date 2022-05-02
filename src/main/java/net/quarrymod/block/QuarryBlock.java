@@ -35,16 +35,16 @@ public class QuarryBlock extends GenericMachineBlock {
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
         super.onPlaced(world, pos, state, placer, stack);
-        ((QuarryBlockEntity) world.getBlockEntity(pos)).resetOnPlaced();
+        if (world.getBlockEntity(pos) instanceof QuarryBlockEntity quarryEntity) {
+            quarryEntity.resetOnPlaced();
+        }
     }
 
     @Override
     public void onStateReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()) {
-            QuarryBlockEntity quarryBlockEntity = ((QuarryBlockEntity) worldIn.getBlockEntity(pos));
-            if (quarryBlockEntity != null) {
-                ItemHandlerUtils.dropItemHandler(worldIn, pos, quarryBlockEntity.quarryUpgradesInventory);
-            }
+        if (state.getBlock() != newState.getBlock()
+            && worldIn.getBlockEntity(pos) instanceof QuarryBlockEntity quarryEntity) {
+            ItemHandlerUtils.dropItemHandler(worldIn, pos, quarryEntity.quarryUpgradesInventory);
             super.onStateReplaced(state, worldIn, pos, newState, isMoving);
         }
     }
@@ -67,15 +67,12 @@ public class QuarryBlock extends GenericMachineBlock {
             return name;
         }
 
-        public Formatting getFormating() {
-            switch (this) {
-                case ExtractTube:
-                    return Formatting.GREEN;
-                case Complete:
-                    return Formatting.AQUA;
-                default:
-                    return Formatting.RED;
-            }
+        public Formatting getFormatting() {
+            return switch (this) {
+                case ExtractTube -> Formatting.GREEN;
+                case Complete -> Formatting.AQUA;
+                default -> Formatting.RED;
+            };
         }
     }
 }

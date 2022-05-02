@@ -1,34 +1,41 @@
 package net.quarrymod;
 
+import static reborncore.RebornRegistry.registerBlock;
+import static reborncore.RebornRegistry.registerItem;
+
 import java.util.Arrays;
-import net.minecraft.item.Item;
 import net.minecraft.item.Item.Settings;
 import net.minecraft.util.Identifier;
 import net.quarrymod.events.StackToolTipHandler;
 import net.quarrymod.init.QMBlockEntities;
-import net.quarrymod.init.QMContent;
-import net.quarrymod.init.QMContent.Machine;
-import net.quarrymod.init.QMContent.Upgrades;
-import reborncore.RebornRegistry;
+import net.quarrymod.init.QuarryManagerContent;
+import net.quarrymod.init.QuarryManagerContent.Machine;
+import net.quarrymod.init.QuarryManagerContent.Upgrades;
 import techreborn.TechReborn;
 
 public class RegistryManager {
 
-    public static Settings itemGroup;
+    private static Settings itemGroupSettings;
+
+    public static Settings getItemGroupSettings() {
+        return itemGroupSettings;
+    }
 
     public static void Init() {
-        itemGroup = new Item.Settings().group(TechReborn.ITEMGROUP);
-        RebornRegistry.registerBlock(QMContent.DRILL_TUBE, itemGroup, new Identifier(QuarryMod.MOD_ID, "drill_tube"));
+        itemGroupSettings = new Settings().group(TechReborn.ITEMGROUP);
 
-        Arrays.stream(Machine.values()).forEach(value -> RebornRegistry.registerBlock(
-            value.block,
-            itemGroup,
-            new Identifier(QuarryMod.MOD_ID, value.name)));
+        registerBlock(QuarryManagerContent.DRILL_TUBE,
+            itemGroupSettings,
+            new Identifier(QuarryMod.MOD_ID, "drill_tube"));
 
-        Arrays.stream(Upgrades.values()).forEach(value -> RebornRegistry.registerItem(
-            value.item,
-            new Identifier(QuarryMod.MOD_ID, value.name)));
+        Arrays.stream(Machine.values()).forEach(
+            value ->
+                registerBlock(value.block,
+                    itemGroupSettings,
+                    new Identifier(QuarryMod.MOD_ID, value.name)));
 
+        Arrays.stream(Upgrades.values()).forEach(
+            value -> registerItem(value.item, new Identifier(QuarryMod.MOD_ID, value.name)));
         QMBlockEntities.init();
     }
 

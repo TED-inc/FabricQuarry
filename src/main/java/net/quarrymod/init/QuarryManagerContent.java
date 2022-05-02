@@ -12,7 +12,7 @@ import net.quarrymod.items.QuarryUpgradeItem;
 import techreborn.utils.InitUtils;
 
 
-public class QMContent {
+public class QuarryManagerContent {
 
     public static final Block DRILL_TUBE = new BlockDrillTube();
 
@@ -40,25 +40,25 @@ public class QMContent {
 
     public enum Upgrades implements ItemConvertible {
         RANGE_EXTENDER_LVL1((quarryBlockEntity, stack) -> {
-            quarryBlockEntity.rangeExtenderLevel = Math.max(quarryBlockEntity.rangeExtenderLevel, 1);
+            quarryBlockEntity.setRangeExtenderLevel(1);
         }),
         RANGE_EXTENDER_LVL2((quarryBlockEntity, stack) -> {
-            quarryBlockEntity.rangeExtenderLevel = Math.max(quarryBlockEntity.rangeExtenderLevel, 2);
+            quarryBlockEntity.setRangeExtenderLevel(2);
         }),
         RANGE_EXTENDER_LVL3((quarryBlockEntity, stack) -> {
-            quarryBlockEntity.rangeExtenderLevel = Math.max(quarryBlockEntity.rangeExtenderLevel, 3);
+            quarryBlockEntity.setRangeExtenderLevel(3);
         }),
         FORTUNE_LVL1((quarryBlockEntity, stack) -> {
-            quarryBlockEntity.fortuneLevel = Math.max(quarryBlockEntity.fortuneLevel, 1);
+            quarryBlockEntity.setFortuneLevel(1);
         }),
         FORTUNE_LVL2((quarryBlockEntity, stack) -> {
-            quarryBlockEntity.fortuneLevel = Math.max(quarryBlockEntity.fortuneLevel, 2);
+            quarryBlockEntity.setFortuneLevel(2);
         }),
         FORTUNE_LVL3((quarryBlockEntity, stack) -> {
-            quarryBlockEntity.fortuneLevel = Math.max(quarryBlockEntity.fortuneLevel, 3);
+            quarryBlockEntity.setFortuneLevel(3);
         }),
         SILKTOUCH((quarryBlockEntity, stack) -> {
-            quarryBlockEntity.isSilkTouch |= true;
+            quarryBlockEntity.setSilkTouch(true);
         });
 
         public final String name;

@@ -1,5 +1,7 @@
 package net.quarrymod.events;
 
+import static net.quarrymod.utils.ToolTipAssistUtils.getUpgradeStats;
+
 import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
@@ -12,13 +14,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.registry.Registry;
 import net.quarrymod.QuarryMod;
-import net.quarrymod.init.QMContent;
+import net.quarrymod.init.QuarryManagerContent;
 import net.quarrymod.items.QuarryUpgradeItem;
-import net.quarrymod.utils.ToolTipAssistUtils;
 
 public class StackToolTipHandler implements ItemTooltipCallback {
 
-    public static final Map<Item, Boolean> ITEM_ID = Maps.newHashMap();
+    public static final Map<Item, Boolean> IS_QM_ITEM_CACHE = Maps.newHashMap();
 
     public static void setup() {
         ItemTooltipCallback.EVENT.register(new StackToolTipHandler());
@@ -28,21 +29,23 @@ public class StackToolTipHandler implements ItemTooltipCallback {
     public void getTooltip(ItemStack stack, TooltipContext tooltipContext, List<Text> tooltipLines) {
         Item item = stack.getItem();
 
-        if (!MinecraftClient.getInstance().isOnThread() || !ITEM_ID.computeIfAbsent(item,
-            StackToolTipHandler::isQMItem)) {
+        if (!MinecraftClient.getInstance().isOnThread()) {
+            return;
+        }
+        if (!isQMItem(item)) {
             return;
         }
 
-        if (item instanceof QuarryUpgradeItem) {
+        if (item instanceof QuarryUpgradeItem quarryItem) {
             tooltipLines.addAll(
-                ToolTipAssistUtils.getUpgradeStats(
-                    QMContent.Upgrades.getFrom((QuarryUpgradeItem) item),
-                    stack.getCount(),
+                getUpgradeStats(
+                    QuarryManagerContent.Upgrades.getFrom(quarryItem),
                     Screen.hasShiftDown()));
         }
     }
 
     private static boolean isQMItem(Item item) {
-        return Registry.ITEM.getId(item).getNamespace().equals(QuarryMod.MOD_ID);
+        return IS_QM_ITEM_CACHE.computeIfAbsent(item,
+            b -> Registry.ITEM.getId(item).getNamespace().equals(QuarryMod.MOD_ID));
     }
 }

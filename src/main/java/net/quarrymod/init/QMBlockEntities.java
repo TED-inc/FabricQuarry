@@ -22,7 +22,7 @@ public class QMBlockEntities {
     private static final List<BlockEntityType<?>> TYPES = new ArrayList<>();
 
     public static final BlockEntityType<QuarryBlockEntity> QUARRY = register(QuarryBlockEntity::new, "quarry",
-        QMContent.Machine.QUARRY);
+        QuarryManagerContent.Machine.QUARRY);
     ;
 
 
