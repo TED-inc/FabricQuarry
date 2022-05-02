@@ -70,6 +70,8 @@ jar {
 publishing {
   publications {
     mavenJava(MavenPublication) {
+      groupId = 'net.quarrymod'
+      artifactId = 'fabric-quarry'
       from components.java
     }
   }

@@ -18,6 +18,10 @@ jobs:
           distribution: 'adopt'
           java-version: 17
 
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
+
       - name: Setup build cache
         uses: actions/cache@v2.1.6
         with:
@@ -33,7 +37,7 @@ jobs:
         # The GITHUB_REF tag comes in the format 'refs/tags/xxx'.
         # So if we split on '/' and take the 3rd value, we can get the release name.
         run: |
-          NEW_VERSION=$(echo "${GITHUB_REF}" | cut -d "/" -f3)
+          NEW_VERSION=${{ steps.get_version.outputs.VERSION }}
           echo "New version: ${NEW_VERSION}"
           echo "Github username: ${GITHUB_ACTOR}"
           ./gradlew build -Pversion=${NEW_VERSION} publish
