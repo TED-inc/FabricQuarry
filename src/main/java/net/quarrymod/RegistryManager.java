@@ -14,7 +14,7 @@ import techreborn.TechReborn;
 
 public class RegistryManager {
 
-    public static  Settings itemGroup;
+    public static Settings itemGroup;
 
     public static void Init() {
         itemGroup = new Item.Settings().group(TechReborn.ITEMGROUP);
