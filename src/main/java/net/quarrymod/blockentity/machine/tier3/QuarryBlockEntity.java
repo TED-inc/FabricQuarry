@@ -522,7 +522,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
             .addInventory();
 
         try {
-            addUpgradeSlots(screenHandler);
+            createUiUpgradeSlots(screenHandler);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -532,7 +532,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     }
 
     @SuppressWarnings( {"java:S3011", "unchecked"})
-    private void addUpgradeSlots(ScreenHandlerBuilder screenHandler) throws NoSuchFieldException, IllegalAccessException {
+    private void createUiUpgradeSlots(ScreenHandlerBuilder screenHandler) throws NoSuchFieldException, IllegalAccessException {
         // Add additional slot group for the upgrades in hidden field
         Field slotsField = ScreenHandlerBuilder.class.getDeclaredField("slots");
         slotsField.setAccessible(true);
