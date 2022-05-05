@@ -17,13 +17,15 @@ import net.quarrymod.QuarryMod;
 import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
 import org.apache.commons.lang3.Validate;
 
-public class QMBlockEntities {
+public class QuarryModBlockEntities {
 
     private static final List<BlockEntityType<?>> TYPES = new ArrayList<>();
 
+    private QuarryModBlockEntities() {
+    }
+
     public static final BlockEntityType<QuarryBlockEntity> QUARRY = register(QuarryBlockEntity::new, "quarry",
-        QMContent.Machine.QUARRY);
-    ;
+        QuarryManagerContent.Machine.QUARRY);
 
 
     public static <T extends BlockEntity> BlockEntityType<T> register(BiFunction<BlockPos, BlockState, T> supplier,
@@ -44,7 +46,7 @@ public class QMBlockEntities {
         FabricBlockEntityTypeBuilder<T> builder) {
         BlockEntityType<T> blockEntityType = builder.build(null);
         Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(id), blockEntityType);
-        QMBlockEntities.TYPES.add(blockEntityType);
+        QuarryModBlockEntities.TYPES.add(blockEntityType);
         return blockEntityType;
     }
 

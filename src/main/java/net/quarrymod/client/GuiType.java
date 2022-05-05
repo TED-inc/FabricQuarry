@@ -20,10 +20,11 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.quarrymod.QuarryMod;
 import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
-import net.quarrymod.client.gui.GuiQuarry;
+import net.quarrymod.client.gui.QuarryScreen;
 import org.jetbrains.annotations.Nullable;
 import reborncore.RebornCore;
 import reborncore.api.blockentity.IMachineGuiHandler;
@@ -34,7 +35,7 @@ public class GuiType<T extends BlockEntity> implements IMachineGuiHandler {
 
     private static final Map<Identifier, GuiType<?>> TYPES = new HashMap<>();
 
-    public static final GuiType<QuarryBlockEntity> QUARRY = register("quarry", () -> () -> GuiQuarry::new);
+    public static final GuiType<QuarryBlockEntity> QUARRY = register("quarry", () -> () -> QuarryScreen::new);
 
     private static <T extends BlockEntity> GuiType<T> register(String id,
         Supplier<Supplier<GuiFactory<T>>> factorySupplierMeme) {
@@ -60,6 +61,7 @@ public class GuiType<T extends BlockEntity> implements IMachineGuiHandler {
         this.guiFactory = factorySupplierMeme;
         this.screenHandlerType = ScreenHandlerRegistry.registerExtended(identifier, getScreenHandlerFactory());
         if (RebornCore.getSide() == EnvType.CLIENT) {
+
             ScreenRegistry.register(screenHandlerType, getGuiFactory());
         }
     }

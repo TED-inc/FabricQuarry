@@ -9,15 +9,15 @@ import net.minecraft.util.Identifier;
 import net.quarrymod.QuarryMod;
 import net.quarrymod.block.QuarryBlock.DisplayState;
 import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
-import net.quarrymod.config.QMConfig;
-import net.quarrymod.packets.QMServerboundPackets;
+import net.quarrymod.config.QuarryMachineConfig;
+import net.quarrymod.packets.QuarryManagerServerPacket;
 import reborncore.client.gui.builder.GuiBase;
 import reborncore.client.gui.builder.widget.GuiButtonExtended;
 import reborncore.client.gui.guibuilder.GuiBuilder;
 import reborncore.common.network.NetworkManager;
 import reborncore.common.screen.BuiltScreenHandler;
 
-public class GuiQuarry extends GuiBase<BuiltScreenHandler> {
+public class QuarryScreen extends GuiBase<BuiltScreenHandler> {
 
     public static final Identifier defaultTextureSheet = new Identifier(QuarryMod.MOD_ID,
         "textures/gui/guielements.png");
@@ -26,7 +26,7 @@ public class GuiQuarry extends GuiBase<BuiltScreenHandler> {
     private GuiButtonExtended mineAllButton;
     private GuiButtonExtended mineOresButton;
 
-    public GuiQuarry(int syncID, final PlayerEntity player, final QuarryBlockEntity blockEntity) {
+    public QuarryScreen(int syncID, final PlayerEntity player, final QuarryBlockEntity blockEntity) {
         super(player, blockEntity, blockEntity.createScreenHandler(syncID, player));
         this.blockEntity = blockEntity;
     }
@@ -71,8 +71,8 @@ public class GuiQuarry extends GuiBase<BuiltScreenHandler> {
         final Layer layer = Layer.FOREGROUND;
         final DisplayState displayState = blockEntity.getDisplayState();
 
-        mineAllButton.visible = blockEntity.getMineAll() && QMConfig.quarryAccessibleExcavationModes >= 3;
-        mineOresButton.visible = !blockEntity.getMineAll() && QMConfig.quarryAccessibleExcavationModes >= 3;
+        mineAllButton.visible = blockEntity.getMineAll() && QuarryMachineConfig.quarryAccessibleExcavationModes >= 3;
+        mineOresButton.visible = !blockEntity.getMineAll() && QuarryMachineConfig.quarryAccessibleExcavationModes >= 3;
 
         if (displayState != DisplayState.Off && displayState != DisplayState.Mining) {
             RenderSystem.setShaderTexture(0, defaultTextureSheet);
@@ -96,7 +96,7 @@ public class GuiQuarry extends GuiBase<BuiltScreenHandler> {
     }
 
     public void changeMineAll(boolean mineAll) {
-        NetworkManager.sendToServer(QMServerboundPackets.createPacketQuarryMineAll(blockEntity, mineAll));
+        NetworkManager.sendToServer(QuarryManagerServerPacket.createPacketQuarryMineAll(blockEntity, mineAll));
     }
 
     @Override
@@ -126,7 +126,7 @@ public class GuiQuarry extends GuiBase<BuiltScreenHandler> {
             renderTooltip(matrixStack,
                 new TranslatableText(
                     "gui.quarrymod.quarry.state_" + blockEntity.getStateName().toLowerCase()).formatted(
-                    displayState.getFormating()),
+                    displayState.getFormatting()),
                 mouseX, mouseY);
         }
 

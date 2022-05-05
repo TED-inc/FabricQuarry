@@ -8,7 +8,7 @@ import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
 import reborncore.common.network.IdentifiedPacket;
 import reborncore.common.network.NetworkManager;
 
-public class QMServerboundPackets {
+public class QuarryManagerServerPacket {
 
     public static final Identifier QUARRY_MINE_ALL = new Identifier(QuarryMod.MOD_ID, "quarry_mine_all");
 
@@ -18,9 +18,9 @@ public class QMServerboundPackets {
             boolean mineAll = buf.readBoolean();
 
             server.execute(() -> {
-                BlockEntity BlockEntity = player.world.getBlockEntity(machinePos);
-                if (BlockEntity instanceof QuarryBlockEntity) {
-                    ((QuarryBlockEntity) BlockEntity).setMineAll(mineAll);
+                BlockEntity blockEntity = player.world.getBlockEntity(machinePos);
+                if (blockEntity instanceof QuarryBlockEntity quarryBlockEntity) {
+                    quarryBlockEntity.setMineAll(mineAll);
                 }
             });
         });
