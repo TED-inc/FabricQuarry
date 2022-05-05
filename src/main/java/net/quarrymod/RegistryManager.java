@@ -7,15 +7,18 @@ import java.util.Arrays;
 import net.minecraft.item.Item.Settings;
 import net.minecraft.util.Identifier;
 import net.quarrymod.events.StackToolTipHandler;
-import net.quarrymod.init.QMBlockEntities;
 import net.quarrymod.init.QuarryManagerContent;
 import net.quarrymod.init.QuarryManagerContent.Machine;
 import net.quarrymod.init.QuarryManagerContent.Upgrades;
+import net.quarrymod.init.QuarryModBlockEntities;
 import techreborn.TechReborn;
 
 public class RegistryManager {
 
     private static Settings itemGroupSettings;
+
+    private RegistryManager() {
+    }
 
     public static Settings getItemGroupSettings() {
         return itemGroupSettings;
@@ -36,7 +39,7 @@ public class RegistryManager {
 
         Arrays.stream(Upgrades.values()).forEach(
             value -> registerItem(value.item, new Identifier(QuarryMod.MOD_ID, value.name)));
-        QMBlockEntities.init();
+        QuarryModBlockEntities.init();
     }
 
     @SuppressWarnings("MethodCallSideOnly")

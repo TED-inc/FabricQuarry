@@ -82,17 +82,6 @@ public final class SlotGroup<T extends MachineBaseBlockEntity> {
         inventory.setHashChanged();
     }
 
-    public boolean isEmpty() {
-        for (int slotId : slotList) {
-            if (!inventory.getStack(slotId).isEmpty()) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-
     @SuppressWarnings("ConstantConditions")
     public void consume(ItemStack stack) {
         ItemStack slotStack = getConsumeSlot(stack);

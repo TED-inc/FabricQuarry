@@ -11,10 +11,10 @@ public class QuarryUpgradeItem extends Item implements IQuarryUpgrade {
     public final String name;
     public final IQuarryUpgrade behavior;
 
-    public QuarryUpgradeItem(String name, IQuarryUpgrade process) {
+    public QuarryUpgradeItem(String name, IQuarryUpgrade quarryBehaviour) {
         super(RegistryManager.getItemGroupSettings().maxCount(16));
         this.name = name;
-        this.behavior = process;
+        this.behavior = quarryBehaviour;
     }
 
     @Override

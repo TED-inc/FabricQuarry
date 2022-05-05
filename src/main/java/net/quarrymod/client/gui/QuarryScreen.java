@@ -17,7 +17,7 @@ import reborncore.client.gui.guibuilder.GuiBuilder;
 import reborncore.common.network.NetworkManager;
 import reborncore.common.screen.BuiltScreenHandler;
 
-public class GuiQuarry extends GuiBase<BuiltScreenHandler> {
+public class QuarryScreen extends GuiBase<BuiltScreenHandler> {
 
     public static final Identifier defaultTextureSheet = new Identifier(QuarryMod.MOD_ID,
         "textures/gui/guielements.png");
@@ -26,7 +26,7 @@ public class GuiQuarry extends GuiBase<BuiltScreenHandler> {
     private GuiButtonExtended mineAllButton;
     private GuiButtonExtended mineOresButton;
 
-    public GuiQuarry(int syncID, final PlayerEntity player, final QuarryBlockEntity blockEntity) {
+    public QuarryScreen(int syncID, final PlayerEntity player, final QuarryBlockEntity blockEntity) {
         super(player, blockEntity, blockEntity.createScreenHandler(syncID, player));
         this.blockEntity = blockEntity;
     }
