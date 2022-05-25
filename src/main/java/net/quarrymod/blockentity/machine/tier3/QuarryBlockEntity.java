@@ -56,8 +56,6 @@ import reborncore.common.util.RebornInventory;
 public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements IToolDrop, InventoryProvider,
     BuiltScreenHandlerProvider {
 
-    // All ores are in "c" namespace
-    private static final Identifier ORE = new Identifier("c", "anything_here");
     private int rangeExtenderLevel;
     private int fortuneLevel;
     private boolean isSilkTouch;
@@ -448,13 +446,11 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
             && !(block instanceof FluidBlock)
             && state.getHardness(world, blockPos) >= 0f
             && !isDrillTube(state)
-            && (getMineAll() || isOre(state, block));
+            && (getMineAll() || isOre(Registry.BLOCK.getId(block).toString()));
     }
 
-    private boolean isOre(BlockState state, Block block) {
-        return state.streamTags().anyMatch(t -> ORE.getNamespace().equals(t.id().getNamespace())) ||
-            QuarryMachineConfig.quarryAdditioanlBlocksToMine.contains(Registry.BLOCK.getId(block).toString());
-
+    private boolean isOre(String id) {
+        return id.endsWith("_ore") || QuarryMachineConfig.quarryAdditioanlBlocksToMine.contains(id);
     }
 
     @SuppressWarnings("ConstantConditions")
