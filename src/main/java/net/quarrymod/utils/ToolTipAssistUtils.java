@@ -8,28 +8,21 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
-import net.quarrymod.config.QMConfig;
-import net.quarrymod.init.QMContent;
+import net.quarrymod.config.QuarryMachineConfig;
+import net.quarrymod.init.QuarryManagerContent;
 
 public class ToolTipAssistUtils {
 
-    public static List<Text> getUpgradeStats(QMContent.Upgrades upgradeType, int count, boolean shiftHeld) {
+    public static List<Text> getUpgradeStats(QuarryManagerContent.Upgrades upgradeType, boolean shiftHeld) {
         List<Text> tips = new ArrayList<>();
 
         switch (upgradeType) {
-            case RANGE_EXTENDER_LVL1:
-                getTextForrangeExtender(1, tips);
-                break;
-            case RANGE_EXTENDER_LVL2:
-                getTextForrangeExtender(2, tips);
-                break;
-            case RANGE_EXTENDER_LVL3:
-                getTextForrangeExtender(3, tips);
-                break;
-            default:
-                tips.add(
-                    new TranslatableText("tooltip.quarrymod." + upgradeType.name)
-                        .formatted(Formatting.GOLD));
+            case RANGE_EXTENDER_LVL1 -> getTextForRangeExtender(1, tips);
+            case RANGE_EXTENDER_LVL2 -> getTextForRangeExtender(2, tips);
+            case RANGE_EXTENDER_LVL3 -> getTextForRangeExtender(3, tips);
+            default -> tips.add(
+                new TranslatableText("tooltip.quarrymod." + upgradeType.name)
+                    .formatted(Formatting.GOLD));
         }
 
         if (shiftHeld && upgradeType.name.contains("lvl")) {
@@ -42,17 +35,14 @@ public class ToolTipAssistUtils {
         return tips;
     }
 
-    private static void getTextForrangeExtender(int level, List<Text> tips) {
-        tips.add(
-            new TranslatableText("tooltip.quarrymod.range_extender_effect")
-                .formatted(Formatting.GOLD));
-        tips.add(
-            new TranslatableText("tooltip.quarrymod.range_extender_value")
-                .formatted(Formatting.GREEN)
-                .append(
-                    new LiteralText(String.valueOf(QMConfig.quarrySqrWorkRadiusByUpgradeLevel.get(level).intValue()))
-                        .formatted(Formatting.GOLD))
-                .append(new TranslatableText("tooltip.quarrymod.range_extender_blocks")
-                    .formatted(Formatting.GOLD)));
+    private static void getTextForRangeExtender(int level, List<Text> tips) {
+        tips.add(new TranslatableText("tooltip.quarrymod.range_extender_effect")
+            .formatted(Formatting.GOLD));
+        tips.add(new TranslatableText("tooltip.quarrymod.range_extender_value")
+            .formatted(Formatting.GREEN)
+            .append(new LiteralText(String.valueOf(QuarryMachineConfig.quarrySqrWorkRadiusByUpgradeLevel.get(level).intValue()))
+                .formatted(Formatting.GOLD))
+            .append(new TranslatableText("tooltip.quarrymod.range_extender_blocks")
+                .formatted(Formatting.GOLD)));
     }
 }

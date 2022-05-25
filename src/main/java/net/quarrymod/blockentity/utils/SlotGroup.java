@@ -12,8 +12,8 @@ import reborncore.common.util.RebornInventory;
 
 public final class SlotGroup<T extends MachineBaseBlockEntity> {
 
-    private RebornInventory<T> inventory;
-    private int[] slotList;
+    private final RebornInventory<T> inventory;
+    private final int[] slotList;
 
     public SlotGroup(RebornInventory<T> inventory, int[] slotList) {
         this.inventory = inventory;
@@ -82,16 +82,7 @@ public final class SlotGroup<T extends MachineBaseBlockEntity> {
         inventory.setHashChanged();
     }
 
-    public boolean isEmpty() {
-        for (int slotId : slotList) {
-            if (!inventory.getStack(slotId).isEmpty()) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
+    @SuppressWarnings("ConstantConditions")
     public void consume(ItemStack stack) {
         ItemStack slotStack = getConsumeSlot(stack);
         slotStack.setCount(slotStack.getCount() - stack.getCount());
