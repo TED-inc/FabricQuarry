@@ -16,11 +16,9 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.quarrymod.QuarryMod;
 import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
@@ -96,7 +94,7 @@ public class GuiType<T extends BlockEntity> implements IMachineGuiHandler {
 
                 @Override
                 public Text getDisplayName() {
-                    return new LiteralText("What is this for?");
+                    return Text.of("What is this for?");
                 }
 
                 @Nullable

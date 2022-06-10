@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.quarrymod.QuarryMod;
 import net.quarrymod.block.QuarryBlock.DisplayState;
@@ -35,10 +35,10 @@ public class QuarryScreen extends GuiBase<BuiltScreenHandler> {
     public void init() {
         super.init();
         mineAllButton = addDrawableChild(
-            new GuiButtonExtended(x + 29, y + 39, 54, 20, new TranslatableText("gui.quarrymod.quarry.mine_all"),
+            new GuiButtonExtended(x + 29, y + 39, 54, 20, Text.translatable("gui.quarrymod.quarry.mine_all"),
                 (ButtonWidget buttonWidget) -> changeMineAll(false)));
         mineOresButton = addDrawableChild(
-            new GuiButtonExtended(x + 29, y + 39, 54, 20, new TranslatableText("gui.quarrymod.quarry.mine_ores"),
+            new GuiButtonExtended(x + 29, y + 39, 54, 20, Text.translatable("gui.quarrymod.quarry.mine_ores"),
                 (ButtonWidget buttonWidget) -> changeMineAll(true)));
         mineAllButton.visible = false;
         mineOresButton.visible = false;
@@ -106,25 +106,25 @@ public class QuarryScreen extends GuiBase<BuiltScreenHandler> {
         if (isPointWithinBounds(28, 18, 80, 19, mouseX, mouseY)
             && this.focusedSlot != null
             && !this.focusedSlot.hasStack()) {
-            renderTooltip(matrixStack, new TranslatableText("gui.quarrymod.quarry.filler_blocks"), mouseX, mouseY);
+            renderTooltip(matrixStack, Text.translatable("gui.quarrymod.quarry.filler_blocks"), mouseX, mouseY);
         }
 
         if (isPointWithinBounds(118, 18, 38, 19, mouseX, mouseY)
             && this.focusedSlot != null
             && !this.focusedSlot.hasStack()) {
-            renderTooltip(matrixStack, new TranslatableText("gui.quarrymod.quarry.drill_tubes"), mouseX, mouseY);
+            renderTooltip(matrixStack, Text.translatable("gui.quarrymod.quarry.drill_tubes"), mouseX, mouseY);
         }
 
         if (isPointWithinBounds(-42, 30, 19, 38, mouseX, mouseY)
             && this.focusedSlot != null
             && !this.focusedSlot.hasStack()) {
-            renderTooltip(matrixStack, new TranslatableText("gui.quarrymod.quarry.drill_upgrades"), mouseX, mouseY);
+            renderTooltip(matrixStack, Text.translatable("gui.quarrymod.quarry.drill_upgrades"), mouseX, mouseY);
         }
 
         if (isPointWithinBounds(86, 42, 15, 16, mouseX, mouseY)
             && displayState != DisplayState.Off && displayState != DisplayState.Mining) {
             renderTooltip(matrixStack,
-                new TranslatableText(
+                Text.translatable(
                     "gui.quarrymod.quarry.state_" + blockEntity.getStateName().toLowerCase()).formatted(
                     displayState.getFormatting()),
                 mouseX, mouseY);
