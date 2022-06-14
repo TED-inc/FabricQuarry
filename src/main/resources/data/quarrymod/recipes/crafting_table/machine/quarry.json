@@ -1,31 +1,31 @@
 {
-    "type": "minecraft:crafting_shaped",
-    "pattern": [
-      "CMC",
-      "EIE",
-      "SDS"
-    ],
-    "key": {
-      "C": {
-        "item": "techreborn:advanced_circuit"
-      },
-      "M": {
-        "item": "techreborn:advanced_machine_frame"
-      },
-      "E": {
-        "item": "techreborn:extractor"
-      },
-      "I": {
-        "tag": "c:iridium_ingots"
-      },
-      "S": {
-        "tag": "c:steel_plates"
-      },
-      "D": {
-        "item": "techreborn:advanced_drill"
-      }
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CMC",
+    "EIE",
+    "SDS"
+  ],
+  "key": {
+    "C": {
+      "item": "techreborn:advanced_circuit"
     },
-    "result": {
-      "item": "quarrymod:quarry"
+    "M": {
+      "item": "techreborn:advanced_machine_frame"
+    },
+    "E": {
+      "item": "techreborn:extractor"
+    },
+    "I": {
+      "tag": "c:iridium_ingots"
+    },
+    "S": {
+      "tag": "c:steel_plates"
+    },
+    "D": {
+      "item": "techreborn:advanced_drill"
     }
+  },
+  "result": {
+    "item": "quarrymod:quarry"
   }
+}

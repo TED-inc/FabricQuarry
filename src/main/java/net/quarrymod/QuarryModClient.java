@@ -4,8 +4,8 @@ import net.fabricmc.api.ClientModInitializer;
 
 public class QuarryModClient implements ClientModInitializer {
 
-	@Override
-	public void onInitializeClient() {
+    @Override
+    public void onInitializeClient() {
         RegistryManager.ClientInit();
-	}
+    }
 }
