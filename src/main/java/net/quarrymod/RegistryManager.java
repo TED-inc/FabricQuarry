@@ -1,42 +1,49 @@
 package net.quarrymod;
 
-import net.quarrymod.events.StackToolTipHandler;
-import net.quarrymod.init.QMBlockEntities;
-import net.quarrymod.init.QMContent;
-import net.quarrymod.init.QMContent.Machine;
-import net.quarrymod.init.QMContent.Upgrades;
-import net.minecraft.item.Item;
-import net.minecraft.item.Item.Settings;
-import net.minecraft.util.Identifier;
-
-import techreborn.TechReborn;
-import reborncore.RebornRegistry;
+import static reborncore.RebornRegistry.registerBlock;
+import static reborncore.RebornRegistry.registerItem;
 
 import java.util.Arrays;
+import net.minecraft.item.Item.Settings;
+import net.minecraft.util.Identifier;
+import net.quarrymod.events.StackToolTipHandler;
+import net.quarrymod.init.QuarryManagerContent;
+import net.quarrymod.init.QuarryManagerContent.Machine;
+import net.quarrymod.init.QuarryManagerContent.Upgrades;
+import net.quarrymod.init.QuarryModBlockEntities;
+import techreborn.TechReborn;
 
 public class RegistryManager {
-  
-  public static final Settings itemGroup = new Item.Settings().group(TechReborn.ITEMGROUP);
 
-    public static void Init()
-    {
-      RebornRegistry.registerBlock(QMContent.DRILL_TUBE, itemGroup, new Identifier(QuarryMod.MOD_ID, "drill_tube"));
-      
-		  Arrays.stream(Machine.values()).forEach(value -> RebornRegistry.registerBlock(
-			  value.block, 
-			  itemGroup,
-			  new Identifier(QuarryMod.MOD_ID, value.name)));
+    private static Settings itemGroupSettings;
 
-      Arrays.stream(Upgrades.values()).forEach(value -> RebornRegistry.registerItem(
-			  value.item, 
-			  new Identifier(QuarryMod.MOD_ID, value.name)));
+    private RegistryManager() {
+    }
 
-      QMBlockEntities.init();
+    public static Settings getItemGroupSettings() {
+        return itemGroupSettings;
+    }
+
+    public static void Init() {
+        itemGroupSettings = new Settings().group(TechReborn.ITEMGROUP);
+
+        registerBlock(QuarryManagerContent.DRILL_TUBE,
+            itemGroupSettings,
+            new Identifier(QuarryMod.MOD_ID, "drill_tube"));
+
+        Arrays.stream(Machine.values()).forEach(
+            value ->
+                registerBlock(value.block,
+                    itemGroupSettings,
+                    new Identifier(QuarryMod.MOD_ID, value.name)));
+
+        Arrays.stream(Upgrades.values()).forEach(
+            value -> registerItem(value.item, new Identifier(QuarryMod.MOD_ID, value.name)));
+        QuarryModBlockEntities.init();
     }
 
     @SuppressWarnings("MethodCallSideOnly")
-    public static void ClientInit() 
-    { 
-      StackToolTipHandler.setup();
+    public static void ClientInit() {
+        StackToolTipHandler.setup();
     }
 }
