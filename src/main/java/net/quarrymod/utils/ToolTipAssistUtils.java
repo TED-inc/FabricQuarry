@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.quarrymod.config.QuarryMachineConfig;
 import net.quarrymod.init.QuarryManagerContent;
@@ -19,7 +20,7 @@ public class ToolTipAssistUtils {
             case RANGE_EXTENDER_LVL2 -> getTextForRangeExtender(2, tips);
             case RANGE_EXTENDER_LVL3 -> getTextForRangeExtender(3, tips);
             default -> tips.add(
-                Text.translatable("tooltip.quarrymod." + upgradeType.name)
+                new TranslatableText("tooltip.quarrymod." + upgradeType.name)
                     .formatted(Formatting.GOLD));
         }
 
@@ -34,13 +35,13 @@ public class ToolTipAssistUtils {
     }
 
     private static void getTextForRangeExtender(int level, List<Text> tips) {
-        tips.add(Text.translatable("tooltip.quarrymod.range_extender_effect")
+        tips.add(new TranslatableText("tooltip.quarrymod.range_extender_effect")
             .formatted(Formatting.GOLD));
-        tips.add(Text.translatable("tooltip.quarrymod.range_extender_value")
+        tips.add(new TranslatableText("tooltip.quarrymod.range_extender_value")
             .formatted(Formatting.GREEN)
             .append(Text.of(String.valueOf(QuarryMachineConfig.quarrySqrWorkRadiusByUpgradeLevel.get(level).intValue())
                 .formatted(Formatting.GOLD)))
-            .append(Text.translatable("tooltip.quarrymod.range_extender_blocks")
+            .append(new TranslatableText("tooltip.quarrymod.range_extender_blocks")
                 .formatted(Formatting.GOLD)));
     }
 }
