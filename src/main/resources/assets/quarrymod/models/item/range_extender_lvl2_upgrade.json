@@ -1,6 +1,6 @@
 {
-    "parent": "minecraft:item/generated",
-    "textures": {
-        "layer0": "quarrymod:item/upgrade/range_extender_lvl2_upgrade"
-    }
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "quarrymod:item/upgrade/range_extender_lvl2_upgrade"
+  }
 }

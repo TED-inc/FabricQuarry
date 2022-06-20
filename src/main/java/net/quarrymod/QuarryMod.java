@@ -1,18 +1,18 @@
 package net.quarrymod;
 
-import reborncore.common.config.Configuration;
 import net.fabricmc.api.ModInitializer;
-import net.quarrymod.config.QMConfig;
-import net.quarrymod.packets.QMServerboundPackets;
+import net.quarrymod.config.QuarryMachineConfig;
+import net.quarrymod.packets.QuarryManagerServerPacket;
+import reborncore.common.config.Configuration;
 
 public class QuarryMod implements ModInitializer {
 
-	public static final String MOD_ID = "quarrymod";
+    public static final String MOD_ID = "quarrymod";
 
-	@Override
-	public void onInitialize() {
-		new Configuration(QMConfig.class, MOD_ID);
-		RegistryManager.Init();
-		QMServerboundPackets.init();
-	}
+    @Override
+    public void onInitialize() {
+        new Configuration(QuarryMachineConfig.class, MOD_ID);
+        RegistryManager.Init();
+        QuarryManagerServerPacket.init();
+    }
 }
