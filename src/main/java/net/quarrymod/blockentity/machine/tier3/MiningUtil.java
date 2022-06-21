@@ -13,15 +13,15 @@ public class MiningUtil {
     /**
      * Creates an queue of positions that should be mined starting at the center of the position.
      * Positions are loaded in a circular pattern, for radius 2, this will be the loaded outcome.
-     * 1  >  2  >  3  > 4  > 5
-     *                       V
-     * 16 > 17  > 18  > 19   6
-     * ^                V    V
-     * 15   25  >[25]   20   7
-     * ^     ^          V    V
-     * 14   23  < 22  < 21   8
-     * ^                     V
-     * 13 < 12  < 11  < 10 < 9
+     * 25 > 24  > 23  > 22 > 21
+     *                        V
+     * 10 >  9  >  8  >  7   20
+     * ^                 V    V
+     * 11    2  > [1]    6   19
+     * ^     ^           V    V
+     * 12    3  <  4  <  5   18
+     * ^                      V
+     * 13 < 14  < 15  < 16 < 17
      * @param radius to use around the position
      * @param miningPosition the position the center of the shaft.
      * @return A list of circular positions to mine.
