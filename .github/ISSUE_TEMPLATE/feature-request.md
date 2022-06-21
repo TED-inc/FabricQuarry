@@ -3,7 +3,7 @@ name: Feature request
 about: Suggest an idea for this project
 title: "[suggestion] Short feature description"
 labels: enhancement
-assignees: TED-inc
+assignees: DissiNL
 
 ---
 

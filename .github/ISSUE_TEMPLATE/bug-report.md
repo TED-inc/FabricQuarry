@@ -3,7 +3,7 @@ name: Bug report
 about: Create a report to help us improve
 title: "[bug | mod_verison] Short bug description"
 labels: bug
-assignees: TED-inc
+assignees: DissiNL
 
 ---
 
