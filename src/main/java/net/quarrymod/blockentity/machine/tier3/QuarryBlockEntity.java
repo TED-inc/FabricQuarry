@@ -28,7 +28,6 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
@@ -314,22 +313,14 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 
     private Queue<BlockPos> createMiningArea() {
         Queue<BlockPos> blocks = new LinkedList<>();
-        // No area to check when the height is of the miner.
+        // No area to check when the height is the same as the one of the miner.
         if (currentY == pos.getY()) {
             return blocks;
         }
 
-        final BlockPos upperBlockPos = pos.add(currentRadius, 0, currentRadius);
-        final BlockPos lowerBlockPos = pos.add(-currentRadius, 0, -currentRadius);
-
-        for (int currentZ = lowerBlockPos.getZ(); currentZ < upperBlockPos.getZ(); currentZ++) {
-            for (int currentX = lowerBlockPos.getX(); currentX < upperBlockPos.getX(); currentX++) {
-                blocks.add(new BlockPos(currentX, currentY, currentZ));
-            }
-        }
-
-        return blocks;
+        return MiningUtil.createMiningPosition(currentRadius, new BlockPos(pos.getX(), currentY, pos.getZ()));
     }
+
 
     @SuppressWarnings("ConstantConditions")
     private void performMineLogic(BlockPos blockPos, boolean fillHole) {
