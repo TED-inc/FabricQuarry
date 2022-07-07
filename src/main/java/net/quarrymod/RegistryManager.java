@@ -6,6 +6,7 @@ import static reborncore.RebornRegistry.registerItem;
 import java.util.Arrays;
 import net.minecraft.item.Item.Settings;
 import net.minecraft.util.Identifier;
+import net.quarrymod.client.QuarryScreenRegistry;
 import net.quarrymod.events.StackToolTipHandler;
 import net.quarrymod.init.QuarryManagerContent;
 import net.quarrymod.init.QuarryManagerContent.Machine;
@@ -44,6 +45,8 @@ public class RegistryManager {
 
     @SuppressWarnings("MethodCallSideOnly")
     public static void ClientInit() {
+
         StackToolTipHandler.setup();
+        QuarryScreenRegistry.init();
     }
 }

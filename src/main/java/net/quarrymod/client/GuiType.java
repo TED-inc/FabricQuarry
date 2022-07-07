@@ -6,8 +6,10 @@ import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
+import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry.Factory;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
+import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry.ExtendedClientHandlerFactory;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.entity.player.PlayerEntity;
@@ -24,7 +26,6 @@ import net.quarrymod.QuarryMod;
 import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
 import net.quarrymod.client.gui.QuarryScreen;
 import org.jetbrains.annotations.Nullable;
-import reborncore.RebornCore;
 import reborncore.api.blockentity.IMachineGuiHandler;
 import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
@@ -32,7 +33,6 @@ import reborncore.common.screen.BuiltScreenHandlerProvider;
 public class GuiType<T extends BlockEntity> implements IMachineGuiHandler {
 
     private static final Map<Identifier, GuiType<?>> TYPES = new HashMap<>();
-
     public static final GuiType<QuarryBlockEntity> QUARRY = register("quarry", () -> () -> QuarryScreen::new);
 
     private static <T extends BlockEntity> GuiType<T> register(String id,
@@ -40,7 +40,7 @@ public class GuiType<T extends BlockEntity> implements IMachineGuiHandler {
         return register(new Identifier(QuarryMod.MOD_ID, id), factorySupplierMeme);
     }
 
-    public static <T extends BlockEntity> GuiType<T> register(Identifier identifier,
+    private static <T extends BlockEntity> GuiType<T> register(Identifier identifier,
         Supplier<Supplier<GuiFactory<T>>> factorySupplierMeme) {
         if (TYPES.containsKey(identifier)) {
             throw new RuntimeException("Duplicate gui type found");
@@ -58,13 +58,10 @@ public class GuiType<T extends BlockEntity> implements IMachineGuiHandler {
         this.identifier = identifier;
         this.guiFactory = factorySupplierMeme;
         this.screenHandlerType = ScreenHandlerRegistry.registerExtended(identifier, getScreenHandlerFactory());
-        if (RebornCore.getSide() == EnvType.CLIENT) {
 
-            ScreenRegistry.register(screenHandlerType, getGuiFactory());
-        }
     }
 
-    private ScreenHandlerRegistry.ExtendedClientHandlerFactory<BuiltScreenHandler> getScreenHandlerFactory() {
+    private ExtendedClientHandlerFactory<BuiltScreenHandler> getScreenHandlerFactory() {
         return (syncId, playerInventory, packetByteBuf) -> {
             final BlockEntity blockEntity = playerInventory.player.world.getBlockEntity(packetByteBuf.readBlockPos());
             BuiltScreenHandler screenHandler = ((BuiltScreenHandlerProvider) blockEntity).createScreenHandler(syncId,
@@ -77,8 +74,7 @@ public class GuiType<T extends BlockEntity> implements IMachineGuiHandler {
         };
     }
 
-    @Environment(EnvType.CLIENT)
-    private GuiFactory<T> getGuiFactory() {
+    public GuiFactory<T> getGuiFactory() {
         return guiFactory.get().get();
     }
 
@@ -114,9 +110,13 @@ public class GuiType<T extends BlockEntity> implements IMachineGuiHandler {
         return identifier;
     }
 
+    public ScreenHandlerType<BuiltScreenHandler> getType() {
+        return screenHandlerType;
+    }
+
     @Environment(EnvType.CLIENT)
     public interface GuiFactory<T extends BlockEntity> extends
-        ScreenRegistry.Factory<BuiltScreenHandler, HandledScreen<BuiltScreenHandler>> {
+        Factory<BuiltScreenHandler, HandledScreen<BuiltScreenHandler>> {
 
         HandledScreen<?> create(int syncId, PlayerEntity playerEntity, T blockEntity);
 
