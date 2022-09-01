@@ -14,7 +14,7 @@ import net.quarrymod.packets.QuarryManagerServerPacket;
 import reborncore.client.gui.builder.GuiBase;
 import reborncore.client.gui.builder.widget.GuiButtonExtended;
 import reborncore.client.gui.guibuilder.GuiBuilder;
-import reborncore.common.network.NetworkManager;
+import reborncore.client.ClientNetworkManager;
 import reborncore.common.screen.BuiltScreenHandler;
 
 public class QuarryScreen extends GuiBase<BuiltScreenHandler> {
@@ -96,7 +96,7 @@ public class QuarryScreen extends GuiBase<BuiltScreenHandler> {
     }
 
     public void changeMineAll(boolean mineAll) {
-        NetworkManager.sendToServer(QuarryManagerServerPacket.createPacketQuarryMineAll(blockEntity, mineAll));
+        ClientNetworkManager.sendToServer(QuarryManagerServerPacket.createPacketQuarryMineAll(blockEntity, mineAll));
     }
 
     @Override
