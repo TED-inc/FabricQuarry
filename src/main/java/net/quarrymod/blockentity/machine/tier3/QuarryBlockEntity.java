@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Queue;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
-import net.minecraft.block.Material;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -28,10 +28,9 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 import net.minecraft.world.World;
 import net.quarrymod.block.QuarryBlock;
 import net.quarrymod.block.QuarryBlock.DisplayState;
@@ -54,17 +53,17 @@ import reborncore.common.screen.slot.BaseSlot;
 import reborncore.common.util.RebornInventory;
 
 public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements IToolDrop, InventoryProvider,
-    BuiltScreenHandlerProvider {
+        BuiltScreenHandlerProvider {
 
     private int rangeExtenderLevel;
     private int fortuneLevel;
     private boolean isSilkTouch;
 
     public final RebornInventory<QuarryBlockEntity> inventory = new RebornInventory<>(12, "QuarryBlockEntity", 64,
-        this);
+            this);
     public final RebornInventory<QuarryBlockEntity> quarryUpgradesInventory = new RebornInventory<>(2, "QuarryUpgrades",
-        1,
-        this);
+            1,
+            this);
 
     private long miningEnergySpend = 0;
     private ExcavationState excavationState = InProgress;
@@ -78,7 +77,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     private final SlotGroup<QuarryBlockEntity> drillTubeSlotGroup = new SlotGroup<>(inventory, new int[] {4, 5});
     private final SlotGroup<QuarryBlockEntity> outputSlotGroup = new SlotGroup<>(inventory, new int[] {6, 7, 8, 9, 10});
     private final SlotGroup<QuarryBlockEntity> quarryUpgradesSlotGroup = new SlotGroup<>(quarryUpgradesInventory,
-        new int[] {0, 1});
+            new int[] {0, 1});
     private int currentRadius;
     private int currentY;
     private Queue<BlockPos> remainingBlocks = new LinkedList<>();
@@ -302,7 +301,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     private void updateRemainingBlocks() {
         final int calculatedY = calculateCurrentDrillTubeDepth();
         final int radius = (int) Math.round(
-            QuarryMachineConfig.quarrySqrWorkRadiusByUpgradeLevel.get(rangeExtenderLevel));
+                QuarryMachineConfig.quarrySqrWorkRadiusByUpgradeLevel.get(rangeExtenderLevel));
         if (currentRadius != radius || currentY != calculatedY || remainingBlocks.isEmpty()) {
             currentRadius = radius;
             currentY = calculatedY;
@@ -422,7 +421,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
 
     private int getTicksPerExcavation() {
         return Math.max((int) (QuarryMachineConfig.quarryTiksPerExcavation * (1d - getSpeedMultiplier())),
-            QuarryMachineConfig.quarryMinTiksPerExcavation);
+                QuarryMachineConfig.quarryMinTiksPerExcavation);
     }
 
     private long getEnergyPerExcavation() {
@@ -434,10 +433,10 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
         BlockState state = world.getBlockState(blockPos);
         Block block = state.getBlock();
         return !state.isAir()
-            && !(block instanceof FluidBlock)
-            && state.getHardness(world, blockPos) >= 0f
-            && !isDrillTube(state)
-            && (getMineAll() || isOre(Registry.BLOCK.getId(block).toString()));
+                && !(block instanceof FluidBlock)
+                && state.getHardness(world, blockPos) >= 0f
+                && !isDrillTube(state)
+                && (getMineAll() || isOre(Registries.BLOCK.getId(block).toString()));
     }
 
     private boolean isOre(String id) {
@@ -450,7 +449,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
         item.addEnchantment(Enchantments.FORTUNE, fortuneLevel);
         item.addEnchantment(Enchantments.SILK_TOUCH, isSilkTouch ? 1 : 0);
         return Block.getDroppedStacks(blockState, (ServerWorld) world, blockPos, world.getBlockEntity(blockPos),
-            null, item);
+                null, item);
     }
 
     @Override
@@ -471,7 +470,7 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     @Override
     public long getBaseMaxInput() {
         return (long) (QuarryMachineConfig.quarryMaxInput * (1d
-            + getSpeedMultiplier() * QuarryMachineConfig.quarryMaxInputOverclockerMultipier));
+                + getSpeedMultiplier() * QuarryMachineConfig.quarryMaxInputOverclockerMultipier));
     }
 
     @Override
@@ -487,26 +486,26 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     @Override
     public BuiltScreenHandler createScreenHandler(int syncID, PlayerEntity player) {
         ScreenHandlerBuilder screenHandler = new ScreenHandlerBuilder("quarry").player(player.getInventory())
-            .inventory().hotbar().addInventory()
-            .blockEntity(this)
-            .filterSlot(0, 30, 20, QuarryBlockEntity::holeFillerFilter)
-            .filterSlot(1, 48, 20, QuarryBlockEntity::holeFillerFilter)
-            .filterSlot(2, 66, 20, QuarryBlockEntity::holeFillerFilter)
-            .filterSlot(3, 84, 20, QuarryBlockEntity::holeFillerFilter)
-            .filterSlot(4, 121, 20, QuarryBlockEntity::drillTubeFilter)
-            .filterSlot(5, 139, 20, QuarryBlockEntity::drillTubeFilter)
-            .outputSlot(6, 55, 66)
-            .outputSlot(7, 75, 66)
-            .outputSlot(8, 95, 66)
-            .outputSlot(9, 115, 66)
-            .outputSlot(10, 135, 66)
-            .energySlot(11, 8, 72)
-            .syncEnergyValue()
-            .sync(this::getProgress, this::setProgress)
-            .sync(this::getState, this::setState)
-            .sync(this::getWorkType, this::setWorkType)
-            .sync(this::getMiningAll, this::setMiningAll)
-            .addInventory();
+                .inventory().hotbar().addInventory()
+                .blockEntity(this)
+                .filterSlot(0, 30, 20, QuarryBlockEntity::holeFillerFilter)
+                .filterSlot(1, 48, 20, QuarryBlockEntity::holeFillerFilter)
+                .filterSlot(2, 66, 20, QuarryBlockEntity::holeFillerFilter)
+                .filterSlot(3, 84, 20, QuarryBlockEntity::holeFillerFilter)
+                .filterSlot(4, 121, 20, QuarryBlockEntity::drillTubeFilter)
+                .filterSlot(5, 139, 20, QuarryBlockEntity::drillTubeFilter)
+                .outputSlot(6, 55, 66)
+                .outputSlot(7, 75, 66)
+                .outputSlot(8, 95, 66)
+                .outputSlot(9, 115, 66)
+                .outputSlot(10, 135, 66)
+                .energySlot(11, 8, 72)
+                .syncEnergyValue()
+                .sync(this::getProgress, this::setProgress)
+                .sync(this::getState, this::setState)
+                .sync(this::getWorkType, this::setWorkType)
+                .sync(this::getMiningAll, this::setMiningAll)
+                .addInventory();
 
         try {
             createUiUpgradeSlots(screenHandler);
@@ -587,7 +586,8 @@ public class QuarryBlockEntity extends PowerAcceptorBlockEntity implements ITool
     private static boolean holeFillerFilter(ItemStack stack) {
         Item item = stack.getItem();
         if (item instanceof BlockItem blockItem) {
-            return blockItem.getBlock().getDefaultState().getMaterial().equals(Material.STONE);
+            //return blockItem.getBlock().getDefaultState().getMaterial().equals(Material.STONE);
+            return blockItem.getBlock().getDefaultState().isOf(Blocks.STONE);
         }
         return false;
     }

@@ -1,4 +1,5 @@
 {
+  "itemGroup.quarrymod.item_group": "科技重生 - 采石场",
   "block.quarrymod.quarry": "采石场",
   "block.quarrymod.drill_tube": "采石管道",
   "item.quarrymod.fortune_lvl1_upgrade": "时运升级I",
