@@ -6,7 +6,8 @@
   "description": "This mod add Industrial Quarry",
   "authors": [
     "TEDinc",
-    "DissiNL"
+    "DissiNL",
+    "Dmunch04"
   ],
   "contact": {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/quarry-reborn",
@@ -30,9 +31,9 @@
   "depends": {
     "fabricloader": ">=0.14.9",
     "fabric": "*",
-    "minecraft": "1.19.2",
+    "minecraft": "1.20.1",
     "java": ">=17",
-    "techreborn": ">=5.3.4"
+    "techreborn": ">=5.8.7"
   },
   "suggests": {
     "another-mod": "*"

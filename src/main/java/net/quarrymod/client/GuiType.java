@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry.Factory;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
@@ -36,12 +35,12 @@ public class GuiType<T extends BlockEntity> implements IMachineGuiHandler {
     public static final GuiType<QuarryBlockEntity> QUARRY = register("quarry", () -> () -> QuarryScreen::new);
 
     private static <T extends BlockEntity> GuiType<T> register(String id,
-        Supplier<Supplier<GuiFactory<T>>> factorySupplierMeme) {
+                                                               Supplier<Supplier<GuiFactory<T>>> factorySupplierMeme) {
         return register(new Identifier(QuarryMod.MOD_ID, id), factorySupplierMeme);
     }
 
     private static <T extends BlockEntity> GuiType<T> register(Identifier identifier,
-        Supplier<Supplier<GuiFactory<T>>> factorySupplierMeme) {
+                                                               Supplier<Supplier<GuiFactory<T>>> factorySupplierMeme) {
         if (TYPES.containsKey(identifier)) {
             throw new RuntimeException("Duplicate gui type found");
         }
@@ -63,9 +62,9 @@ public class GuiType<T extends BlockEntity> implements IMachineGuiHandler {
 
     private ExtendedClientHandlerFactory<BuiltScreenHandler> getScreenHandlerFactory() {
         return (syncId, playerInventory, packetByteBuf) -> {
-            final BlockEntity blockEntity = playerInventory.player.world.getBlockEntity(packetByteBuf.readBlockPos());
+            final BlockEntity blockEntity = playerInventory.player.getWorld().getBlockEntity(packetByteBuf.readBlockPos());
             BuiltScreenHandler screenHandler = ((BuiltScreenHandlerProvider) blockEntity).createScreenHandler(syncId,
-                playerInventory.player);
+                    playerInventory.player);
 
             //Set the screen handler type, not ideal but works lol
             screenHandler.setType(screenHandlerType);
@@ -96,9 +95,9 @@ public class GuiType<T extends BlockEntity> implements IMachineGuiHandler {
                 @Nullable
                 @Override
                 public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    final BlockEntity blockEntity = player.world.getBlockEntity(pos);
+                    final BlockEntity blockEntity = player.getWorld().getBlockEntity(pos);
                     BuiltScreenHandler screenHandler = ((BuiltScreenHandlerProvider) blockEntity).createScreenHandler(
-                        syncId, player);
+                            syncId, player);
                     screenHandler.setType(screenHandlerType);
                     return screenHandler;
                 }
@@ -116,13 +115,13 @@ public class GuiType<T extends BlockEntity> implements IMachineGuiHandler {
 
     @Environment(EnvType.CLIENT)
     public interface GuiFactory<T extends BlockEntity> extends
-        Factory<BuiltScreenHandler, HandledScreen<BuiltScreenHandler>> {
+            Factory<BuiltScreenHandler, HandledScreen<BuiltScreenHandler>> {
 
         HandledScreen<?> create(int syncId, PlayerEntity playerEntity, T blockEntity);
 
         @Override
         default HandledScreen create(BuiltScreenHandler builtScreenHandler, PlayerInventory playerInventory,
-            Text text) {
+                                     Text text) {
             PlayerEntity playerEntity = playerInventory.player;
             //noinspection unchecked
             T blockEntity = (T) builtScreenHandler.getBlockEntity();
