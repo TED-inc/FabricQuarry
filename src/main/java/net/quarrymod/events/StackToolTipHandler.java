@@ -1,21 +1,22 @@
 package net.quarrymod.events;
 
-import static net.quarrymod.utils.ToolTipAssistUtils.getUpgradeStats;
-
 import com.google.common.collect.Maps;
-import java.util.List;
-import java.util.Map;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
-import net.minecraft.util.registry.Registry;
 import net.quarrymod.QuarryMod;
 import net.quarrymod.init.QuarryManagerContent;
 import net.quarrymod.items.QuarryUpgradeItem;
+
+import java.util.List;
+import java.util.Map;
+
+import static net.quarrymod.utils.ToolTipAssistUtils.getUpgradeStats;
 
 public class StackToolTipHandler implements ItemTooltipCallback {
 
@@ -46,6 +47,6 @@ public class StackToolTipHandler implements ItemTooltipCallback {
 
     private static boolean isQMItem(Item item) {
         return IS_QM_ITEM_CACHE.computeIfAbsent(item,
-            b -> Registry.ITEM.getId(item).getNamespace().equals(QuarryMod.MOD_ID));
+            b -> Registries.ITEM.getId(item).getNamespace().equals(QuarryMod.MOD_ID));
     }
 }

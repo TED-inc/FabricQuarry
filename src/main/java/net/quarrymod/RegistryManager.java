@@ -1,18 +1,20 @@
 package net.quarrymod;
 
-import static reborncore.RebornRegistry.registerBlock;
-import static reborncore.RebornRegistry.registerItem;
-
-import java.util.Arrays;
+import net.minecraft.item.Item;
 import net.minecraft.item.Item.Settings;
 import net.minecraft.util.Identifier;
+import net.quarrymod.block.QuarryItemGroup;
 import net.quarrymod.client.QuarryScreenRegistry;
 import net.quarrymod.events.StackToolTipHandler;
 import net.quarrymod.init.QuarryManagerContent;
 import net.quarrymod.init.QuarryManagerContent.Machine;
 import net.quarrymod.init.QuarryManagerContent.Upgrades;
 import net.quarrymod.init.QuarryModBlockEntities;
-import techreborn.TechReborn;
+
+import java.util.Arrays;
+
+import static reborncore.RebornRegistry.registerBlock;
+import static reborncore.RebornRegistry.registerItem;
 
 public class RegistryManager {
 
@@ -26,7 +28,7 @@ public class RegistryManager {
     }
 
     public static void Init() {
-        itemGroupSettings = new Settings().group(TechReborn.ITEMGROUP);
+        itemGroupSettings = new Item.Settings();
 
         registerBlock(QuarryManagerContent.DRILL_TUBE,
             itemGroupSettings,
@@ -41,6 +43,7 @@ public class RegistryManager {
         Arrays.stream(Upgrades.values()).forEach(
             value -> registerItem(value.item, new Identifier(QuarryMod.MOD_ID, value.name)));
         QuarryModBlockEntities.init();
+        QuarryItemGroup.registerItemsInItemGroup();
     }
 
     @SuppressWarnings("MethodCallSideOnly")

@@ -1,11 +1,7 @@
 package net.quarrymod.client;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry.Factory;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
@@ -29,6 +25,10 @@ import org.jetbrains.annotations.Nullable;
 import reborncore.api.blockentity.IMachineGuiHandler;
 import reborncore.common.screen.BuiltScreenHandler;
 import reborncore.common.screen.BuiltScreenHandlerProvider;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
 
 public class GuiType<T extends BlockEntity> implements IMachineGuiHandler {
 
@@ -63,7 +63,7 @@ public class GuiType<T extends BlockEntity> implements IMachineGuiHandler {
 
     private ExtendedClientHandlerFactory<BuiltScreenHandler> getScreenHandlerFactory() {
         return (syncId, playerInventory, packetByteBuf) -> {
-            final BlockEntity blockEntity = playerInventory.player.world.getBlockEntity(packetByteBuf.readBlockPos());
+            final BlockEntity blockEntity = playerInventory.player.getWorld().getBlockEntity(packetByteBuf.readBlockPos());
             BuiltScreenHandler screenHandler = ((BuiltScreenHandlerProvider) blockEntity).createScreenHandler(syncId,
                 playerInventory.player);
 
@@ -96,7 +96,7 @@ public class GuiType<T extends BlockEntity> implements IMachineGuiHandler {
                 @Nullable
                 @Override
                 public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    final BlockEntity blockEntity = player.world.getBlockEntity(pos);
+                    final BlockEntity blockEntity = player.getWorld().getBlockEntity(pos);
                     BuiltScreenHandler screenHandler = ((BuiltScreenHandlerProvider) blockEntity).createScreenHandler(
                         syncId, player);
                     screenHandler.setType(screenHandlerType);

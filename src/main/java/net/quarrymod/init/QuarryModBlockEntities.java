@@ -1,21 +1,23 @@
 package net.quarrymod.init;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.BiFunction;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.quarrymod.QuarryMod;
 import net.quarrymod.blockentity.machine.tier3.QuarryBlockEntity;
 import org.apache.commons.lang3.Validate;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.BiFunction;
 
 public class QuarryModBlockEntities {
 
@@ -45,7 +47,7 @@ public class QuarryModBlockEntities {
     public static <T extends BlockEntity> BlockEntityType<T> register(String id,
         FabricBlockEntityTypeBuilder<T> builder) {
         BlockEntityType<T> blockEntityType = builder.build(null);
-        Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(id), blockEntityType);
+        Registry.register(Registries.BLOCK_ENTITY_TYPE, new Identifier(id), blockEntityType);
         QuarryModBlockEntities.TYPES.add(blockEntityType);
         return blockEntityType;
     }
