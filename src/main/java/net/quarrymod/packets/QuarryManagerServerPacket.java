@@ -18,7 +18,7 @@ public class QuarryManagerServerPacket {
             boolean mineAll = buf.readBoolean();
 
             server.execute(() -> {
-                BlockEntity blockEntity = player.world.getBlockEntity(machinePos);
+                BlockEntity blockEntity = player.getWorld().getBlockEntity(machinePos);
                 if (blockEntity instanceof QuarryBlockEntity quarryBlockEntity) {
                     quarryBlockEntity.setMineAll(mineAll);
                 }
